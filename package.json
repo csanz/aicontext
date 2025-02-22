@@ -1,0 +1,41 @@
+{
+  "name": "aictx",
+  "version": "1.0.0",
+  "description": "CLI tool to generate code context files",
+  "main": "bin/aictx.js",
+  "bin": {
+    "cx": "./bin/aictx.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "context",
+    "code",
+    "development",
+    "ai",
+    "documentation",
+    "codebase"
+  ],
+  "author": {
+    "name": "Christian Sanz",
+    "email": "chrissanz@gmail.com",
+    "url": "https://github.com/csanz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csanz/aictx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/csanz/aictx/issues"
+  },
+  "homepage": "https://github.com/csanz/aictx#readme",
+  "license": "MIT",
+  "dependencies": {
+    "clipboardy": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

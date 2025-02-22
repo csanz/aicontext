@@ -1,5 +1,7 @@
 # AICTX (AI Context Generator)
 
+![AICTX Brain](static/brain.jpg)
+
 A command-line tool that generates context files from your codebase for use with AI tools like Cursor, ChatGPT, or Claude.
 
 ## Features
@@ -65,3 +67,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 MIT
+
