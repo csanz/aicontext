@@ -2,7 +2,11 @@
 
 ![AICTX Brain](static/brain.jpg)
 
-A command-line tool that generates context files from your codebase for use with AI tools like Cursor, ChatGPT, or Claude.
+**Enhance AI Code Assistance with Comprehensive Codebase Context.**
+
+`cx` is a command-line tool designed to generate detailed context files from your codebase, significantly improving the accuracy and effectiveness of AI tools like Cursor, ChatGPT, and Claude. By providing a complete view of your project, `cx` eliminates common AI errors such as duplicate functions, missing variables, and incorrect code implementations.
+
+Simply run `cx ./` to generate a context file that you can paste into your preferred AI tool, ensuring it has the necessary understanding to provide precise and helpful assistance.
 
 ## Features
 
