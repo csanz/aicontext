@@ -29,7 +29,12 @@ cx <directory> [options]
 ## Options
 
 - `-h, --help`: Show help
-- `--no-compress`: Skip compression of the output file
+- `--no-minimize`: Override config to generate uncompressed output
+- `--min`: Force generate a minimized version (in addition to current output)
+- `-s, --snap`: Create a snapshot in context/snap (not affected by --clear)
+- `--configure`: Set up configuration
+- `--show`: Show current configuration
+- `--clear`: Remove all generated context files
 
 ## Example
 
