@@ -36,6 +36,7 @@ cx <directory> [options]
 ```bash
 cx ./src
 ```
+![AICTX Brain](static/example.png)
 
 This will:
 1. Scan the `./src` directory for JS and JSON files
