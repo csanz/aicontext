@@ -42,23 +42,47 @@ cx <directory> [options]
 
 ## Example
 
+Generate a context file for the current directory:
 ```bash
-cx ./src
+cx ./
 ```
+Generate a snapshot:
+```bash
+cx ./ --snap
+```
+Generate a minimized version:
+```bash
+cx ./ --min
+```
+Clear all generated context files:
+```bash
+cx ./ --clear
+```
+Configure the tool:
+```bash
+cx ./ --configure
+```
+Show current configuration:
+```bash
+cx ./ --show
+```
+
 ![AICTX Brain](static/example.png)
 
+### How it works
+
 This will:
-1. Scan the `./src` directory for JS and JSON files
-2. Create a `context/code` directory (if it doesn't exist)
+1. Scan the source directory for relevant files (JS, JSON, TS, etc.)
+2. Create a `context/code` directory for regular output or `context/snap` for snapshots
 3. Generate a context file with the directory structure and file contents
-4. Create both regular and compressed versions (unless --no-compress is used)
-5. Automatically add `context/` to .gitignore
+4. Minimize the output by default (can be disabled via config or --no-minimize)
+5. Prompt to add `context/` to .gitignore if not present
 
-## Output
+### Output Locations
 
-The tool generates two files (when compression is enabled):
-- `context/code/<directory>-context-<n>.txt`: Full context file
-- `context/code/<directory>-context-<n>.txt.min`: Compressed version
+- Regular output: `context/code/<directory>-context-<n>.txt`
+- Snapshots: `context/snap/<directory>-<timestamp>-context-<n>.txt`
+- Minimized versions will have `.min` suffix
 
 The sequence number `<n>` automatically increments for each new scan.
 
