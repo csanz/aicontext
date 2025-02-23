@@ -10,13 +10,16 @@ Simply run `cx ./` to generate a context file that you can paste into your prefe
 
 ## Features
 
-- 📁 Scans directories for JavaScript and JSON files
+- 📁 Scans directories for JavaScript, TypeScript, JSON, ENV files and more
 - 🌳 Includes full directory structure
 - 📝 Creates comprehensive context files
 - 🗜️ Optional text compression to reduce context size
 - 🔄 Automatic sequence numbering for multiple scans
 - 📋 Maintains code readability for AI tools
 - ✨ Automatic .gitignore management
+- 🔍 Perfect for studying other projects' architecture and patterns
+- 🎯 Helps AI understand similar projects for better code suggestions
+- 🔐 Includes configuration files and environment templates
 
 ## Installation
 

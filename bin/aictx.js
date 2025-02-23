@@ -26,6 +26,7 @@ Options:
   --no-minimize    Override config to generate uncompressed output
   --min           Force generate a minimized version (in addition to current output)
   -s, --snap      Create a snapshot in context/snap (not affected by --clear)
+  --template      Create a template in context/template (not affected by --clear)
   --configure      Set up configuration
   --show          Show current configuration
   --clear         Remove all generated context files
@@ -52,10 +53,25 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
   }
 
   const isSnapshot = args.includes('-s') || args.includes('--snap');
+  const isTemplate = args.includes('--template');
+  
+  // Get template name if provided
+  let templateName = '';
+  if (isTemplate) {
+    const templateIndex = args.indexOf('--template');
+    templateName = args[templateIndex + 1];
+    if (!templateName) {
+      console.error("❌ Error: Please provide a name for the template");
+      process.exit(1);
+    }
+  }
+
   const config = getConfig();
   const options = {
     minimize: config.minimize && !args.includes('--no-minimize'),
-    snapshot: isSnapshot
+    snapshot: isSnapshot,
+    template: isTemplate,
+    templateName
   };
 
   // Check and update .gitignore - now properly awaited
@@ -73,8 +89,8 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
     result.outputFile = minStats.compressedFile;
   }
 
-  // Skip clipboard for snapshots
-  if (config.autoClipboard && !isSnapshot) {
+  // Skip clipboard for snapshots and templates
+  if (config.autoClipboard && !isSnapshot && !isTemplate) {
     try {
       const content = fs.readFileSync(result.outputFile, 'utf8');
       clipboardy.write(content).then(() => {
