@@ -8,25 +8,54 @@ A CLI tool that helps AI tools better understand your codebase. Run with `cx` co
 
 Generate context files from your code to help AI tools like ChatGPT, Claude, or Cursor provide more accurate assistance. Supports code patterns and templates for reuse across projects.
 
-```bash
-# Basic usage
-cx ./
+## Installation
 
-# Save a code pattern as global template (stored in ~/.aictx/templates)
-# Use this when you find a good implementation you want to reuse
+```bash
+npm install -g aictx
+```
+
+Update:
+```bash
+npm update -g aictx
+```
+
+## Usage
+
+```bash
+cx <directory> [options]
+```
+
+### Basic Usage
+```bash
+# Generate context for current directory
+cx ./
+```
+
+### Working with Templates
+
+```bash
+# Save a pattern globally (stored in ~/.aictx/templates)
+# Great for saving reusable implementations
 cx ./src/auth --template jwt-auth
 
-# Later, in any project, list available templates
+# View and load templates from anywhere
 cx --template-list
+# Select a template to load it into ./context/template
 
-# After selecting a template, it's saved to ./context/template
-# You can then copy its contents to your AI tool with instructions like:
-# "Using this JWT auth implementation as reference, create similar auth for my project"
-
-# Or use interactive menu
+# Quick access through menu
 cx
-# Then select option 4 to view and load templates
+# Select option 4 to view templates
 ```
+
+### Template Workflow
+1. Find useful code pattern you want to reuse
+2. Save it as a global template
+3. In any other project, list and load the template
+4. Copy template contents to your AI tool
+5. Ask AI to adapt the pattern to your current project
+
+Example AI prompt:
+"Using this JWT auth implementation as reference, create similar auth for my project"
 
 ## Features
 
@@ -44,18 +73,6 @@ cx
 - 🌍 Access your templates from any project
 - 📚 Build a personal library of code solutions
 
-## Installation
-
-```bash
-npm install -g aictx
-```
-
-## Usage
-
-```bash
-cx <directory> [options]
-```
-
 ## Options
 
 - `-h, --help`: Show help
@@ -70,6 +87,8 @@ cx <directory> [options]
 Note: Running `cx` without arguments shows an interactive menu where you can configure, view templates, and more.
 
 ## Examples
+
+![AICTX Example](static/example.png)
 
 Generate a context file for the current directory:
 ```bash
@@ -111,8 +130,6 @@ Show current configuration:
 ```bash
 cx --show
 ```
-
-![AICTX Example](static/example.png)
 
 ### How it works
 
