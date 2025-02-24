@@ -12,15 +12,20 @@ Generate context files from your code to help AI tools like ChatGPT, Claude, or 
 # Basic usage
 cx ./
 
-# Save auth implementation as template
+# Save a code pattern as global template (stored in ~/.aictx/templates)
+# Use this when you find a good implementation you want to reuse
 cx ./src/auth --template jwt-auth
 
-# List and load saved templates
+# Later, in any project, list available templates
 cx --template-list
+
+# After selecting a template, it's saved to ./context/template
+# You can then copy its contents to your AI tool with instructions like:
+# "Using this JWT auth implementation as reference, create similar auth for my project"
 
 # Or use interactive menu
 cx
-# Then select option 4 to view templates
+# Then select option 4 to view and load templates
 ```
 
 ## Features
