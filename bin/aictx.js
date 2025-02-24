@@ -8,6 +8,7 @@ const { compressFile } = require('../lib/compressionHandler');
 const clipboardy = require('clipboardy');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
 // Define TEMPLATES_DIR using CONFIG_DIR
 const TEMPLATES_DIR = path.join(CONFIG_DIR, 'templates');
@@ -102,6 +103,16 @@ async function showTemplates(rl) {
 
 async function main() {
   const args = process.argv.slice(2);
+
+  // Add template listing as a direct flag
+  if (args.includes('--template-list')) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    await showTemplates(rl);
+    return;
+  }
 
   if (args.length === 0) {
     await showMainMenu();

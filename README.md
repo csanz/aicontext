@@ -14,6 +14,13 @@ cx ./
 
 # Save auth implementation as template
 cx ./src/auth --template jwt-auth
+
+# List and load saved templates
+cx --template-list
+
+# Or use interactive menu
+cx
+# Then select option 4 to view templates
 ```
 
 ## Features
@@ -105,12 +112,14 @@ cx --show
 ### How it works
 
 This will:
+
 1. Scan the source directory for relevant files (JS, JSON, TS, etc.)
 2. Create directories based on the type:
    - `context/code` for regular output
    - `context/snap` for snapshots
    - `~/.aictx/templates` for reusable templates
    - `context/template` for loaded templates
+
 3. Generate a context file with the directory structure and file contents
 4. Minimize the output by default (can be disabled via config or --no-minimize)
 5. Prompt to add `context/` to .gitignore if not present
@@ -122,9 +131,10 @@ This will:
 
 - Regular output: `context/code/<directory>-context-<n>.txt`
 - Snapshots: `context/snap/<directory>-<timestamp>-context-<n>.txt`
-- Templates: 
-  - Saved to: `~/.aictx/templates/<name>-<date>.txt`
-  - Loaded to: `context/template/<name>-<date>.txt`
+- Templates:
+   - Saved to: `~/.aictx/templates/<name>-<date>.txt`
+   - Loaded to: `context/template/<name>-<date>.txt`
+
 - Minimized versions will have `.min` suffix
 
 The sequence number `<n>` automatically increments for each new scan.
