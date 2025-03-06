@@ -23,7 +23,11 @@ npm install -g aictx@latest
 ```
 ## Quick Start
 
-Navigate to your code base and run `cx ./ -m "my first context file"`
+Navigate to your code base and run `cx ./ -m "google login works"`
+
+The output will be copied to your clipboard. You also have the option to directly post the full context to your preferred AI/IDE chat window.
+
+![AICTX Brain](static/example.png)
 
 ```bash
 # Basic usage - generate context from current directory
