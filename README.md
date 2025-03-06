@@ -1,12 +1,16 @@
-# aictx
+# AICTX - AI Context Generator
 
-A CLI tool that helps AI tools better understand your codebase. Run with `cx` command.
+CLI tool to generate context files from source code, for AI-assisted vibe coding.
 
-![AICTX Brain](static/brain.jpg)
+![AICTX Brain](static/brain2.png)
 
-## Overview
+## Test Status 🧪
 
-Generate context files from your code to help AI tools like ChatGPT, Claude, or Cursor provide more accurate assistance. Supports code patterns and templates for reuse across projects.
+[![Test Status](https://img.shields.io/badge/tests-10%20passed-brightgreen.svg)](TESTS.md)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
+
+Last tested: 03/05/2025, 17:43 America/Los_Angeles
+
 
 ## Installation
 
@@ -14,165 +18,149 @@ Generate context files from your code to help AI tools like ChatGPT, Claude, or 
 npm install -g aictx
 ```
 
-Update:
-```bash
-npm update -g aictx
-```
+## Quick Start
 
-## Usage
+Navigate to your code base and run `cx ./ -m "my first context file"`
 
 ```bash
-cx <directory> [options]
-```
-
-### Basic Usage
-```bash
-# Generate context for current directory
+# Basic usage - generate context from current directory
 cx ./
+
+# Generate context with a message
+cx ./ -m "Add authentication feature"
+
+# Create a snapshot
+cx ./ -s
+
+# Create a snapshot with message
+cx ./ -sm "Before refactoring"
+# or
+cx ./ -s -m "Before refactoring"
+
+# Create a template
+cx ./ -t "auth-feature"
+# or with message
+cx ./ -tm "Authentication feature template"
 ```
 
-### Working with Templates
+## Command Reference
 
-```bash
-# Save a pattern globally (stored in ~/.aictx/templates)
-# Great for saving reusable implementations
-cx ./src/auth --template jwt-auth
+### Basic Commands
+- `cx ./` - Generate context from current directory
+- `cx <path>` - Generate context from specified path
+- `cx -h` - Show help
+- `cx -h <category>` - Show help for specific category
+- `cx --more` - Interactive help menu
+- `cx --configure` - Configure settings
+- `cx --show` - Show current configuration
 
-# View and load templates from anywhere
-cx --template-list
-# Select a template to load it into ./context/template
+### Output Options
+- `--no-minimize` - Generate uncompressed output
+- `--min` - Force generate minimized version (in addition to current output)
 
-# Quick access through menu
-cx
-# Select option 4 to view templates
+### Messages
+- `-m "message"` - Add a message to the context file
+  ```bash
+  cx ./ -m "Adding new feature"
+  ```
+
+### Snapshots
+- `-s, --snap` - Create a snapshot
+- `-sm "message"` - Create a snapshot with message (combined flag)
+- `-s -m "message"` - Create a snapshot with message (separate flags)
+  ```bash
+  cx ./ -sm "Before major update"
+  # or
+  cx ./ -s -m "Before major update"
+  ```
+
+### Templates
+- `-t, --template` - Create a template
+- `-tm "message"` - Create a template with message (combined flag)
+- `-t -m "message"` - Create a template with message (separate flags)
+  ```bash
+  cx ./ -tm "Auth feature template"
+  # or
+  cx ./ -t -m "Auth feature template"
+  ```
+
+### Clear Commands
+- `--clear` - Remove context files only
+- `--clear -s` - Remove context files and snapshots
+- `--clear -t` - Remove context files and templates
+  ```bash
+  # Clear only context files
+  cx --clear
+
+  # Clear context files and snapshots
+  cx --clear -s
+
+  # Clear context files and templates
+  cx --clear -t
+  ```
+
+## File Naming Patterns
+
+- Basic context: `context.txt`, `context-2.txt`, etc.
+- With message: `feature-name.txt`, `feature-name-2.txt`, etc.
+- Snapshots: `snap-[timestamp].txt` or `snap-message-[timestamp].txt`
+- Templates: `template-[timestamp].txt` or `template-message-[timestamp].txt`
+
+## Directory Structure
+
+```
+.
+└── context/
+    ├── code/      # Regular context files
+    ├── snap/      # Snapshot files
+    └── template/  # Template files
 ```
 
-### Template Workflow
-1. Find useful code pattern you want to reuse
-2. Save it as a global template
-3. In any other project, list and load the template
-4. Copy template contents to your AI tool
-5. Ask AI to adapt the pattern to your current project
+## Configuration
 
-Example AI prompt:
-"Using this JWT auth implementation as reference, create similar auth for my project"
+Use `cx --configure` to set up:
+- Default minimization
+- Auto-clipboard copy
+- Default template directory
+- Other preferences
 
-## Features
+View current configuration with `cx --show`.
 
-- 📁 Scans directories for JavaScript, TypeScript, JSON, ENV files and more
-- 🌳 Includes full directory structure
-- 📝 Creates comprehensive context files
-- 🗜️ Optional text compression to reduce context size
-- 🔄 Automatic sequence numbering for multiple scans
-- 📋 Maintains code readability for AI tools
-- ✨ Automatic .gitignore management
-- 🔍 Perfect for studying other projects' architecture and patterns
-- 🎯 Helps AI understand similar projects for better code suggestions
-- 🔐 Includes configuration files and environment templates
-- 💾 Save reusable code patterns as templates
-- 🌍 Access your templates from any project
-- 📚 Build a personal library of code solutions
+## Help System
 
-## Options
+- `cx -h` - Basic help
+- `cx -h <category>` - Category-specific help (e.g., `cx -h snapshots`)
+- `cx --more` - Interactive help menu with detailed information
 
-- `-h, --help`: Show help
-- `--no-minimize`: Override config to generate uncompressed output
-- `--min`: Force generate a minimized version (in addition to current output)
-- `-s, --snap`: Create a snapshot in context/snap (not affected by --clear)
-- `--template <name>`: Save as a reusable template in ~/.aictx/templates
-- `--template-list`: View and load available templates from ~/.aictx/templates
-- `--configure`: Set up configuration
-- `--show`: Show current configuration
-- `--clear`: Remove all generated context files (preserves snapshots)
+## Best Practices
 
-Note: Running `cx` without arguments shows an interactive menu where you can configure, view templates, and more.
+1. Add the 'context' folder to your .gitignore file
+2. Use meaningful messages for better organization
+3. Create snapshots before major changes
+4. Use templates for recurring patterns
+5. Clear old context files regularly
 
 ## Examples
 
-![AICTX Example](static/example.png)
-
-Generate a context file for the current directory:
 ```bash
+# Basic context generation
 cx ./
-```
 
-Generate a snapshot:
-```bash
-cx ./ --snap
-```
+# With message
+cx ./ -m "Adding authentication"
 
-Generate a minimized version:
-```bash
-cx ./ --min
-```
+# Create snapshot before refactoring
+cx ./ -sm "Before refactoring auth"
 
-Save a feature as a template:
-```bash
-cx ./src/auth --template jwt-auth
-```
+# Create template for common setup
+cx ./ -tm "Basic Express setup"
 
-View and load saved templates:
-```bash
-cx
-# Then select option 4 to view templates
-```
-
-Clear all generated context files:
-```bash
+# Clear old files but keep snapshots
 cx --clear
+
+# Clear everything including snapshots
+cx --clear -s
 ```
-
-Configure the tool:
-```bash
-cx --configure
-```
-
-Show current configuration:
-```bash
-cx --show
-```
-
-### How it works
-
-This will:
-
-1. Scan the source directory for relevant files (JS, JSON, TS, etc.)
-2. Create directories based on the type:
-   - `context/code` for regular output
-   - `context/snap` for snapshots
-   - `~/.aictx/templates` for reusable templates
-   - `context/template` for loaded templates
-
-3. Generate a context file with the directory structure and file contents
-4. Minimize the output by default (can be disabled via config or --no-minimize)
-5. Prompt to add `context/` to .gitignore if not present
-6. For templates:
-   - Save to `~/.aictx/templates` when creating
-   - Load to `context/template` when selected from menu
-
-### Output Locations
-
-- Regular output: `context/code/<directory>-context-<n>.txt`
-- Snapshots: `context/snap/<directory>-<timestamp>-context-<n>.txt`
-- Templates:
-   - Saved to: `~/.aictx/templates/<name>-<date>.txt`
-   - Loaded to: `context/template/<name>-<date>.txt`
-
-- Minimized versions will have `.min` suffix
-
-The sequence number `<n>` automatically increments for each new scan.
-Template dates use YYYY-MM-DD format (e.g., jwt-auth-2024-01-20.txt).
-
-## Why Use AICTX?
-
-- **AI Context**: Provides AI tools with complete codebase understanding
-- **Time Saving**: Quickly generates comprehensive context files
-- **Space Efficient**: Optimized compression while maintaining readability
-- **Version Control Friendly**: Automatic .gitignore management
-- **Sequential Tracking**: Maintains history of context generations
-- **Reusable Templates**: Save and reuse code patterns across projects
-- **Global Access**: Templates stored in home directory for easy access
-- **Pattern Library**: Build a personal library of code solutions
 
 ## Contributing
 
@@ -182,3 +170,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 MIT
 
+
+---
+*Last updated: 03/05/2025, 17:43 America/Los_Angeles*
