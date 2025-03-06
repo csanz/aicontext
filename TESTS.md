@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/5/2025, 5:43:44 PM
-- **Version**: 1.0.8
+- **Last Run**: 3/5/2025, 5:52:07 PM
+- **Version**: 1.0.9
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 10
-- **Passed**: 10
+- **Total Tests**: 11
+- **Passed**: 11
 - **Failed**: 0
 
 ## Passed Tests
@@ -22,6 +22,7 @@
 - ✅ Clear with snapshots
 - ✅ Help system
 - ✅ Category help
+- ✅ Version flag
 
 ## Failed Tests
 None

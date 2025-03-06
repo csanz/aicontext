@@ -333,6 +333,23 @@ async function runTests() {
             });
         }
 
+        // Test 11: Version flag
+        try {
+            const packageJson = require('../package.json');
+            const output = runCommand('--version');
+            assert(output.includes(packageJson.version), 'Version should match package.json');
+            results.push({
+                name: 'Version flag',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Version flag',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
     } finally {
         // Display results
         console.log('\n📊 Test Summary');

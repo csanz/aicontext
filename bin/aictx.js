@@ -20,6 +20,13 @@ const TEMPLATES_DIR = path.join(CONFIG_DIR, 'templates');
 async function main() {
   const args = process.argv.slice(2);
 
+  // Check for version flag first
+  if (args.includes('--version')) {
+    const packageJson = require('../package.json');
+    console.log(packageJson.version);
+    process.exit(0);
+  }
+
   // Handle interactive help
   if (args.includes('--more')) {
     await showInteractiveHelp();

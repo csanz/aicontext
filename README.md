@@ -6,10 +6,10 @@ CLI tool to generate context files from source code, for AI-assisted vibe coding
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-10%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-11%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
 
-Last tested: 03/05/2025, 17:43 America/Los_Angeles
+Last tested: 03/05/2025, 17:52 America/Los_Angeles
 
 
 ## Installation
@@ -17,7 +17,10 @@ Last tested: 03/05/2025, 17:43 America/Los_Angeles
 ```bash
 npm install -g aictx
 ```
-
+or if you need to reinstall the latest
+```bash
+npm install -g aictx@latest
+```
 ## Quick Start
 
 Navigate to your code base and run `cx ./ -m "my first context file"`
@@ -172,4 +175,4 @@ MIT
 
 
 ---
-*Last updated: 03/05/2025, 17:43 America/Los_Angeles*
+*Last updated: 03/05/2025, 17:52 America/Los_Angeles*
