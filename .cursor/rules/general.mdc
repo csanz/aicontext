@@ -10,3 +10,4 @@ alwaysApply: false
 - complete the @CONTEXT.md to describe the current state of the application? This way, for future 
 changes, we can understand what each part of the code does and how it relates to other files. 
 - Always create a configuration value pair inside @config.json for items that are used across multiple files
+- If you get confused remember to use the latest context file @latest-context (if exists)
