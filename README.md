@@ -10,10 +10,10 @@ CLI tool to generate context files from source code, for AI-assisted vibe coding
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-12%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-14%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
 
-Last tested: 03/07/2025, 18:09 America/Los_Angeles
+Last tested: 03/08/2025, 15:16 America/Los_Angeles
 
 
 ## Installation
@@ -55,6 +55,9 @@ cx ./ -s -m "Before refactoring"
 cx ./ -t "auth-feature"
 # or with message
 cx ./ -tm "Authentication feature template"
+
+# Load templates (like cursor rules)
+cx --load
 ```
 
 ## Command Reference
@@ -68,6 +71,7 @@ cx ./ -tm "Authentication feature template"
 - `cx --more` - Interactive help menu
 - `cx --configure` - Configure settings
 - `cx --show` - Show current configuration
+- `cx --load` - Load and import templates
 
 ### Output Options
 
@@ -129,12 +133,45 @@ cx --clear -s
 cx --clear -t
 ```
 
+## Latest Context Feature
+
+Every time you generate a context file, a copy is automatically saved to `./context/latest-context.txt`. This provides a consistent location to access your most recent context, making it ideal for AI tools that expect a fixed file path.
+
+## Template Loading
+
+The `--load` command allows you to import templates into your projects:
+
+```bash
+cx --load
+```
+
+This will show a menu of available template categories (like cursor rules) and allow you to select specific templates to import. For cursor rules, the selected template will be imported into your project's `.cursor/rules` directory with the `.mdc` extension (required for Cursor IDE to recognize the rules).
+
+### Available Templates
+
+- **General Rules**: Comprehensive coding best practices including:
+  - Documentation standards
+  - Detailed README documentation guidelines
+  - Configuration management
+  - Code quality practices
+  - Version control recommendations
+
+### File Handling
+
+If a file with the same name already exists, you'll be given options to:
+1. Override the existing file (completely replaces the existing file with the template)
+2. Create a new file with a numbered suffix (e.g., `general-2.mdc`)
+3. Cancel the import
+
+The tool includes verification steps to ensure files are properly written or overridden, with detailed logging to help troubleshoot any issues. This ensures you won't accidentally overwrite important files and gives you control over how templates are imported.
+
 ## File Naming Patterns
 
 - Basic context: `context.txt`, `context-2.txt`, etc.
 - With message: `feature-name.txt`, `feature-name-2.txt`, etc.
 - Snapshots: `snap-[timestamp].txt` or `snap-message-[timestamp].txt`
 - Templates: `template-[timestamp].txt` or `template-message-[timestamp].txt`
+- Latest context: `latest-context.txt` (always contains the most recent context)
 
 ## Directory Structure
 
@@ -143,7 +180,8 @@ cx --clear -t
 └── context/
     ├── code/      # Regular context files
     ├── snap/      # Snapshot files
-    └── template/  # Template files
+    ├── template/  # Template files
+    └── latest-context.txt  # Most recent context
 ```
 
 ## Configuration
@@ -170,6 +208,7 @@ View current configuration with `cx --show`.
 3. Create snapshots before major changes
 4. Use templates for recurring patterns
 5. Clear old context files regularly
+6. Use the latest-context.txt file for AI tools integration
 
 ## Examples
 
@@ -185,6 +224,9 @@ cx ./ -sm "Before refactoring auth"
 
 # Create template for common setup
 cx ./ -tm "Basic Express setup"
+
+# Load cursor rules template
+cx --load
 
 # Clear old files but keep snapshots
 cx --clear
@@ -203,7 +245,7 @@ MIT
 
 ---
 
-_Last updated: 03/05/2025, 17:52 America/Los_Angeles_
+_Last updated: 03/07/2025, 18:04 America/Los_Angeles_
 
 ---
-*Last updated: 03/07/2025, 18:09 America/Los_Angeles*
+*Last updated: 03/08/2025, 15:16 America/Los_Angeles*

@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/7/2025, 6:09:10 PM
-- **Version**: 1.0.9
+- **Last Run**: 3/8/2025, 3:16:10 PM
+- **Version**: 1.1.1
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 12
-- **Passed**: 12
+- **Total Tests**: 14
+- **Passed**: 14
 - **Failed**: 0
 
 ## Passed Tests
@@ -24,6 +24,8 @@
 - ✅ Category help
 - ✅ Version flag
 - ✅ Latest context file generation
+- ✅ Template loading command
+- ✅ Template files existence and overriding
 
 ## Failed Tests
 None

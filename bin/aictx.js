@@ -15,6 +15,7 @@ const { handleTemplate } = require('../lib/templateHandler');
 const { showMainMenu, showTemplates } = require('../lib/menuHandler');
 const { showHelp, showInteractiveHelp } = require('../lib/helpHandler');
 const { getOutputFilePath } = require('../lib/pathUtils');
+const { handleLoadCommand } = require('../lib/templateLoader');
 const clipboardy = require('clipboardy');
 const fs = require('fs');
 const path = require('path');
@@ -40,6 +41,12 @@ async function main() {
   // Handle interactive help
   if (args.includes('--more')) {
     await showInteractiveHelp();
+    return;
+  }
+
+  // Handle template loading
+  if (args.includes('--load')) {
+    await handleLoadCommand();
     return;
   }
 
@@ -91,6 +98,7 @@ Options:
   --show          Show current configuration
   --clear         Remove all generated context files
   -m <message>    Add a message to the context file
+  --load          Load and import templates (like cursor rules)
 
 Note: It is recommended to add the 'context' folder to your .gitignore file.
     `);

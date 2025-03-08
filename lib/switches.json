@@ -6,7 +6,8 @@
         "-h, --help": "Show help information",
         "--configure": "Set up configuration",
         "--show": "Show current configuration",
-        "--clear": "Remove all generated context files"
+        "--clear": "Remove all generated context files",
+        "--load": "Load and import templates (like cursor rules)"
       },
       "examples": [
         "cx -h                   # Show general help",
