@@ -1,0 +1,34 @@
+{
+  "version": "1.0.9",
+  "contextDirectories": {
+    "main": "context",
+    "snapshots": "context/snap",
+    "templates": "context/template",
+    "code": "context/code",
+    "latest": "context/latest-context.txt"
+  },
+  "ignoredDirectories": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".git",
+    "context"
+  ],
+  "defaultSettings": {
+    "autoClipboard": false,
+    "minimize": true,
+    "createLatestFile": true
+  },
+  "outputFormats": {
+    "standard": "context.txt",
+    "snapshot": "snap-[timestamp].txt",
+    "template": "template-[timestamp].txt",
+    "message": "[message].txt",
+    "latest": "latest-context.txt"
+  },
+  "compressionSettings": {
+    "enabled": true,
+    "minSuffix": ".min"
+  }
+} 

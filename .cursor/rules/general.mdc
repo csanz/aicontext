@@ -1,0 +1,12 @@
+---
+description: general rules to follow
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- Could you add logs/comments to all the files
+- complete the @CONTEXT.md to describe the current state of the application? This way, for future 
+changes, we can understand what each part of the code does and how it relates to other files. 
+- Always create a configuration value pair inside @config.json for items that are used across multiple files

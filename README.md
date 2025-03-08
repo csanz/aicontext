@@ -1,15 +1,19 @@
 # AICTX - AI Context Generator
 
+> *"The AICTX context generator is a game-changer for AI-assisted development. With one simple command, it creates a comprehensive snapshot of the entire codebase in a single file, giving me immediate understanding of the project structure and implementation details. The automatically updated `latest-context.txt` provides the perfect reference point, allowing me to deliver more accurate, relevant assistance without constantly requesting additional files. It's like having X-ray vision into the codebase, making our collaborative coding sessions remarkably efficient and effective."*
+> 
+> — **Claude**, AI Assistant
+
 CLI tool to generate context files from source code, for AI-assisted vibe coding.
 
 ![AICTX Brain](static/brain2.png)
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-11%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-12%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
 
-Last tested: 03/05/2025, 17:52 America/Los_Angeles
+Last tested: 03/07/2025, 18:09 America/Los_Angeles
 
 
 ## Installation
@@ -17,10 +21,13 @@ Last tested: 03/05/2025, 17:52 America/Los_Angeles
 ```bash
 npm install -g aictx
 ```
+
 or if you need to reinstall the latest
+
 ```bash
 npm install -g aictx@latest
 ```
+
 ## Quick Start
 
 Navigate to your code base and run `cx ./ -m "google login works"`
@@ -53,6 +60,7 @@ cx ./ -tm "Authentication feature template"
 ## Command Reference
 
 ### Basic Commands
+
 - `cx ./` - Generate context from current directory
 - `cx <path>` - Generate context from specified path
 - `cx -h` - Show help
@@ -62,49 +70,64 @@ cx ./ -tm "Authentication feature template"
 - `cx --show` - Show current configuration
 
 ### Output Options
+
 - `--no-minimize` - Generate uncompressed output
 - `--min` - Force generate minimized version (in addition to current output)
 
 ### Messages
+
 - `-m "message"` - Add a message to the context file
-  ```bash
-  cx ./ -m "Adding new feature"
-  ```
+
+```bash
+cx ./ -m "Adding new feature"
+```
 
 ### Snapshots
+
 - `-s, --snap` - Create a snapshot
+
 - `-sm "message"` - Create a snapshot with message (combined flag)
+
 - `-s -m "message"` - Create a snapshot with message (separate flags)
-  ```bash
-  cx ./ -sm "Before major update"
-  # or
-  cx ./ -s -m "Before major update"
-  ```
+
+```bash
+cx ./ -sm "Before major update"
+# or
+cx ./ -s -m "Before major update"
+```
 
 ### Templates
+
 - `-t, --template` - Create a template
+
 - `-tm "message"` - Create a template with message (combined flag)
+
 - `-t -m "message"` - Create a template with message (separate flags)
-  ```bash
-  cx ./ -tm "Auth feature template"
-  # or
-  cx ./ -t -m "Auth feature template"
-  ```
+
+```bash
+cx ./ -tm "Auth feature template"
+# or
+cx ./ -t -m "Auth feature template"
+```
 
 ### Clear Commands
+
 - `--clear` - Remove context files only
+
 - `--clear -s` - Remove context files and snapshots
+
 - `--clear -t` - Remove context files and templates
-  ```bash
-  # Clear only context files
-  cx --clear
 
-  # Clear context files and snapshots
-  cx --clear -s
+```bash
+# Clear only context files
+cx --clear
 
-  # Clear context files and templates
-  cx --clear -t
-  ```
+# Clear context files and snapshots
+cx --clear -s
+
+# Clear context files and templates
+cx --clear -t
+```
 
 ## File Naming Patterns
 
@@ -115,7 +138,7 @@ cx ./ -tm "Authentication feature template"
 
 ## Directory Structure
 
-```
+```ini
 .
 └── context/
     ├── code/      # Regular context files
@@ -126,6 +149,7 @@ cx ./ -tm "Authentication feature template"
 ## Configuration
 
 Use `cx --configure` to set up:
+
 - Default minimization
 - Auto-clipboard copy
 - Default template directory
@@ -177,6 +201,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 MIT
 
+---
+
+_Last updated: 03/05/2025, 17:52 America/Los_Angeles_
 
 ---
-*Last updated: 03/05/2025, 17:52 America/Los_Angeles*
+*Last updated: 03/07/2025, 18:09 America/Los_Angeles*

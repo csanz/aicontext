@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/**
+ * AICTX - AI Context Generator
+ * Main executable file that handles CLI commands and orchestrates the context generation process.
+ * This file serves as the entry point for the 'cx' command.
+ */
+
 const generateContext = require('../lib/contextGenerator');
 const checkGitIgnore = require('../lib/gitignoreHandler');
 const { getConfig, showConfig, configure, CONFIG_DIR } = require('../lib/configHandler');
@@ -17,6 +23,10 @@ const readline = require('readline');
 // Define TEMPLATES_DIR using CONFIG_DIR
 const TEMPLATES_DIR = path.join(CONFIG_DIR, 'templates');
 
+/**
+ * Main function that processes command line arguments and executes the appropriate action
+ * Handles all CLI commands including context generation, snapshots, templates, and configuration
+ */
 async function main() {
   const args = process.argv.slice(2);
 
@@ -87,6 +97,7 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
     process.exit(0);
   }
 
+  // Handle configuration commands
   if (args.includes('--configure')) {
     configure();
     return;
@@ -97,6 +108,7 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
     return;
   }
 
+  // Get the target directory from arguments
   const dir = args[0];
   if (!dir) {
     console.error("❌ Error: Please provide a directory path");
@@ -137,6 +149,7 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
     }
   }
 
+  // Load user configuration
   const config = getConfig();
   const options = {
     minimize: config.minimize && !args.includes('--no-minimize'),
