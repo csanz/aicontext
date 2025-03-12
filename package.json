@@ -33,7 +33,8 @@
   "homepage": "https://github.com/csanz/aictx#readme",
   "license": "MIT",
   "dependencies": {
-    "clipboardy": "^2.3.0"
+    "clipboardy": "^2.3.0",
+    "minimatch": "^5.1.6"
   },
   "engines": {
     "node": ">=14.0.0"

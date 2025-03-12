@@ -10,10 +10,10 @@ CLI tool to generate context files from source code, for AI-assisted vibe coding
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-14%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-17%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
 
-Last tested: 03/08/2025, 15:16 America/Los_Angeles
+Last tested: 03/12/2025, 09:50 America/Los_Angeles
 
 
 ## Installation
@@ -122,6 +122,8 @@ cx ./ -t -m "Auth feature template"
 
 - `--clear -t` - Remove context files and templates
 
+- `--clear-all` - Remove all context files and directories (with confirmation)
+
 ```bash
 # Clear only context files
 cx --clear
@@ -131,6 +133,29 @@ cx --clear -s
 
 # Clear context files and templates
 cx --clear -t
+
+# Clear all context files and directories
+cx --clear-all
+```
+
+### Ignore Commands
+
+- `-i, --ignore <pattern>` - Add a glob pattern to exclude files/directories
+
+- `--show-ignore` - Show current exclusion patterns
+
+```bash
+# Exclude all .o files
+cx -i "*.o"
+
+# Exclude Rust target directory
+cx -i "target/**"
+
+# Exclude all minified JS files
+cx -i "**/*.min.js"
+
+# Show current exclusion patterns
+cx --show-ignore
 ```
 
 ## Latest Context Feature
@@ -242,10 +267,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 MIT
-
----
-
-_Last updated: 03/07/2025, 18:04 America/Los_Angeles_
-
----
-*Last updated: 03/08/2025, 15:16 America/Los_Angeles*

@@ -8,7 +8,7 @@
 
 const generateContext = require('../lib/contextGenerator');
 const checkGitIgnore = require('../lib/gitignoreHandler');
-const { getConfig, showConfig, configure, CONFIG_DIR } = require('../lib/configHandler');
+const { getConfig, showConfig, configure, CONFIG_DIR, addExclusion, showExclusions } = require('../lib/configHandler');
 const { clearContextFiles } = require('../lib/cleanupUtils');
 const { compressFile } = require('../lib/compressionHandler');
 const { handleTemplate } = require('../lib/templateHandler');
@@ -50,6 +50,20 @@ async function main() {
     return;
   }
 
+  // Handle exclusion patterns
+  const ignoreIndex = args.findIndex(arg => arg === '-i' || arg === '--ignore');
+  if (ignoreIndex !== -1 && args[ignoreIndex + 1]) {
+    const pattern = args[ignoreIndex + 1];
+    addExclusion(pattern);
+    return;
+  }
+
+  // Show exclusion patterns
+  if (args.includes('--show-ignore')) {
+    showExclusions();
+    return;
+  }
+
   // Add template listing as a direct flag
   if (args.includes('--template-list')) {
     const rl = readline.createInterface({
@@ -84,6 +98,32 @@ async function main() {
     process.exit(0);
   }
 
+  // Handle --clear-all command
+  if (args.includes('--clear-all')) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+
+    console.log('\nThis will remove the following directories and their contents:');
+    console.log('  - context/code');
+    console.log('  - context/snap');
+    console.log('  - context/template');
+    console.log('  - context (if empty)\n');
+
+    rl.question('Are you sure you want to proceed? (y/N): ', (answer) => {
+      if (answer.toLowerCase() === 'y') {
+        clearContextFiles(true, true);
+        console.log('✅ All context files and directories have been cleared.');
+      } else {
+        console.log('❌ Operation cancelled. No files were removed.');
+      }
+      rl.close();
+      process.exit(0);
+    });
+    return;
+  }
+
   if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
     console.log(`
 Usage: cx <directory> [options]
@@ -97,8 +137,14 @@ Options:
   --configure      Set up configuration
   --show          Show current configuration
   --clear         Remove all generated context files
+  --clear-all     Remove all context files and directories (with confirmation)
   -m <message>    Add a message to the context file
   --load          Load and import templates (like cursor rules)
+  -i, --ignore <pattern>  Add a glob pattern to exclude files/directories
+  --show-ignore   Show current exclusion patterns
+  --more          Interactive help menu
+  --template-list View and load available templates
+  --version       Show version information
 
 Note: It is recommended to add the 'context' folder to your .gitignore file.
     `);

@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/8/2025, 3:16:10 PM
+- **Last Run**: 3/12/2025, 9:50:58 AM
 - **Version**: 1.1.1
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 14
-- **Passed**: 14
+- **Total Tests**: 17
+- **Passed**: 17
 - **Failed**: 0
 
 ## Passed Tests
@@ -26,6 +26,9 @@
 - ✅ Latest context file generation
 - ✅ Template loading command
 - ✅ Template files existence and overriding
+- ✅ Clear all command
+- ✅ Ignore pattern
+- ✅ Show ignore patterns
 
 ## Failed Tests
 None

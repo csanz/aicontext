@@ -116,10 +116,8 @@ Last tested: ${readableDateStr}`;
         if (readmeContent.includes('*Last updated:')) {
             readmeContent = readmeContent.replace(
                 /\*Last updated:.*\*/,
-                `*Last updated: ${readableDateStr}*`
+                '' // Remove the bottom timestamp
             );
-        } else {
-            readmeContent = readmeContent.trim() + `\n\n---\n*Last updated: ${readableDateStr}*\n`;
         }
 
         fs.writeFileSync(readmePath, readmeContent);
@@ -497,6 +495,85 @@ async function runTests() {
         } catch (error) {
             results.push({
                 name: 'Template files existence and overriding',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 15: Clear all command
+        try {
+            // Create some dummy files in the context directories
+            fs.mkdirSync(path.join(CONTEXT_DIR, 'code'), { recursive: true });
+            fs.writeFileSync(path.join(CONTEXT_DIR, 'code', 'dummy.txt'), 'dummy content');
+            fs.mkdirSync(path.join(CONTEXT_DIR, 'snap'), { recursive: true });
+            fs.writeFileSync(path.join(CONTEXT_DIR, 'snap', 'dummy.txt'), 'dummy content');
+            fs.mkdirSync(path.join(CONTEXT_DIR, 'template'), { recursive: true });
+            fs.writeFileSync(path.join(CONTEXT_DIR, 'template', 'dummy.txt'), 'dummy content');
+
+            // Simulate user input for confirmation
+            const child = require('child_process').spawn('node', ['./bin/aictx.js', '--clear-all'], {
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+
+            // Provide 'y' as input to confirm the operation
+            child.stdin.write('y\n');
+            child.stdin.end();
+
+            // Wait for the process to complete
+            await new Promise((resolve, reject) => {
+                child.on('close', (code) => {
+                    if (code !== 0) {
+                        return reject(new Error(`Process exited with code ${code}`));
+                    }
+                    resolve();
+                });
+            });
+
+            // Check that the directories are cleared
+            assert(!fs.existsSync(path.join(CONTEXT_DIR, 'code')), 'Code directory should be cleared');
+            assert(!fs.existsSync(path.join(CONTEXT_DIR, 'snap')), 'Snap directory should be cleared');
+            assert(!fs.existsSync(path.join(CONTEXT_DIR, 'template')), 'Template directory should be cleared');
+
+            results.push({
+                name: 'Clear all command',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Clear all command',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 16: Ignore pattern
+        try {
+            runCommand('-i "*.o"');
+            const exclusions = require('../lib/configHandler').getExclusions();
+            assert(exclusions.patterns.includes('*.o'), 'Exclusion pattern should be added');
+            results.push({
+                name: 'Ignore pattern',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Ignore pattern',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 17: Show ignore patterns
+        try {
+            const output = runCommand('--show-ignore');
+            assert(output.includes('*.o'), 'Output should include the added ignore pattern');
+            results.push({
+                name: 'Show ignore patterns',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Show ignore patterns',
                 status: 'failed',
                 error: error.message
             });

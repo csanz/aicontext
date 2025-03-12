@@ -17,7 +17,16 @@
     "build",
     "coverage",
     ".git",
-    "context"
+    "context",
+    "target",
+    "bin",
+    "obj"
+  ],
+  "binaryExtensions": [
+    ".o", ".obj", ".a", ".lib", ".so", ".dll", ".dylib", ".exe",
+    ".rlib", ".rmeta",
+    ".class", ".jar", ".war",
+    ".pyc", ".pyo", ".pyd"
   ],
   "defaultSettings": {
     "autoClipboard": false,
