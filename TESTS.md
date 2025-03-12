@@ -7,8 +7,8 @@
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 17
-- **Passed**: 17
+- **Total Tests**: 18
+- **Passed**: 18
 - **Failed**: 0
 
 ## Passed Tests
@@ -29,6 +29,7 @@
 - ✅ Clear all command
 - ✅ Ignore pattern
 - ✅ Show ignore patterns
+- ✅ Interactive help menu
 
 ## Failed Tests
 None

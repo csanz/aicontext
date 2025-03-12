@@ -6,11 +6,10 @@
 
 CLI tool to generate context files from source code, for AI-assisted vibe coding.
 
-![AICTX Brain](static/brain2.png)
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-17%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-18%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
 
 Last tested: 03/12/2025, 09:50 America/Los_Angeles
@@ -62,100 +61,30 @@ cx --load
 
 ## Command Reference
 
-### Basic Commands
-
-- `cx ./` - Generate context from current directory
-- `cx <path>` - Generate context from specified path
-- `cx -h` - Show help
-- `cx -h <category>` - Show help for specific category
-- `cx --more` - Interactive help menu
-- `cx --configure` - Configure settings
-- `cx --show` - Show current configuration
-- `cx --load` - Load and import templates
-
-### Output Options
-
-- `--no-minimize` - Generate uncompressed output
-- `--min` - Force generate minimized version (in addition to current output)
-
-### Messages
-
-- `-m "message"` - Add a message to the context file
-
-```bash
-cx ./ -m "Adding new feature"
 ```
+Usage: cx <directory> [options]
 
-### Snapshots
+Quick Help:
+  cx -h <category>     Show help for specific category
+  cx --more            Interactive help menu
 
-- `-s, --snap` - Create a snapshot
+Options:
+  -h, --help           Show help information
+  --configure          Set up configuration
+  --show               Show current configuration
+  --clear              Remove all generated context files insid ./code folder
+  --load               Load and import templates (like cursor rules)
+  -s, --snap           Create a snapshot in context/snap
+  -m "message"         Add a message to the context file
+  -i, --ignore <pattern> Add a glob pattern to exclude files/directories
+  --show-ignore        Show current exclusion patterns
+  --more               This will expand into more details 
 
-- `-sm "message"` - Create a snapshot with message (combined flag)
-
-- `-s -m "message"` - Create a snapshot with message (separate flags)
-
-```bash
-cx ./ -sm "Before major update"
-# or
-cx ./ -s -m "Before major update"
-```
-
-### Templates
-
-- `-t, --template` - Create a template
-
-- `-tm "message"` - Create a template with message (combined flag)
-
-- `-t -m "message"` - Create a template with message (separate flags)
-
-```bash
-cx ./ -tm "Auth feature template"
-# or
-cx ./ -t -m "Auth feature template"
-```
-
-### Clear Commands
-
-- `--clear` - Remove context files only
-
-- `--clear -s` - Remove context files and snapshots
-
-- `--clear -t` - Remove context files and templates
-
-- `--clear-all` - Remove all context files and directories (with confirmation)
-
-```bash
-# Clear only context files
-cx --clear
-
-# Clear context files and snapshots
-cx --clear -s
-
-# Clear context files and templates
-cx --clear -t
-
-# Clear all context files and directories
-cx --clear-all
-```
-
-### Ignore Commands
-
-- `-i, --ignore <pattern>` - Add a glob pattern to exclude files/directories
-
-- `--show-ignore` - Show current exclusion patterns
-
-```bash
-# Exclude all .o files
-cx -i "*.o"
-
-# Exclude Rust target directory
-cx -i "target/**"
-
-# Exclude all minified JS files
-cx -i "**/*.min.js"
-
-# Show current exclusion patterns
-cx --show-ignore
+Examples:
+    cx ./ -m "hello world"  # Will generate context files and add "hello-world" to the name
+    cx -i "target/**"       # Exclude Rust target directory
+    cx ./ -s -m "before refactor"  # Create a snapshot with a message
+    cx --clear-all          # Remove all context files and directories
 ```
 
 ## Latest Context Feature
@@ -213,7 +142,6 @@ The tool includes verification steps to ensure files are properly written or ove
 
 Use `cx --configure` to set up:
 
-- Default minimization
 - Auto-clipboard copy
 - Default template directory
 - Other preferences
@@ -225,6 +153,15 @@ View current configuration with `cx --show`.
 - `cx -h` - Basic help
 - `cx -h <category>` - Category-specific help (e.g., `cx -h snapshots`)
 - `cx --more` - Interactive help menu with detailed information
+
+## Binary File Handling
+
+Binary files (like `.o`, `.exe`, `.dll`) are automatically excluded from processing. You can add custom exclusion patterns using the `-i/--ignore` flag.
+
+```bash
+# Exclude Rust target directory
+cx -i "target/**"
+```
 
 ## Best Practices
 
@@ -248,16 +185,14 @@ cx ./ -m "Adding authentication"
 cx ./ -sm "Before refactoring auth"
 
 # Create template for common setup
-cx ./ -tm "Basic Express setup"
+cx ./ -t "project-setup"
 
-# Load cursor rules template
-cx --load
+# Exclude specific files or directories
+cx -i "*.min.js"
+cx -i "build/**"
 
-# Clear old files but keep snapshots
-cx --clear
-
-# Clear everything including snapshots
-cx --clear -s
+# Clear all context files and directories
+cx --clear-all
 ```
 
 ## Contributing

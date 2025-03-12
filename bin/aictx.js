@@ -64,16 +64,6 @@ async function main() {
     return;
   }
 
-  // Add template listing as a direct flag
-  if (args.includes('--template-list')) {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    });
-    await showTemplates(rl);
-    return;
-  }
-
   if (args.length === 0) {
     await showMainMenu();
     return;
@@ -128,26 +118,28 @@ async function main() {
     console.log(`
 Usage: cx <directory> [options]
 
-Options:
-  -h, --help       Show help
-  --no-minimize    Override config to generate uncompressed output
-  --min           Force generate a minimized version (in addition to current output)
-  -s, --snap      Create a snapshot in context/snap (not affected by --clear)
-  --template      Create a template in context/template (not affected by --clear)
-  --configure      Set up configuration
-  --show          Show current configuration
-  --clear         Remove all generated context files
-  --clear-all     Remove all context files and directories (with confirmation)
-  -m <message>    Add a message to the context file
-  --load          Load and import templates (like cursor rules)
-  -i, --ignore <pattern>  Add a glob pattern to exclude files/directories
-  --show-ignore   Show current exclusion patterns
-  --more          Interactive help menu
-  --template-list View and load available templates
-  --version       Show version information
+Quick Help:
+  cx -h <category>     Show help for specific category
+  cx --more            Interactive help menu
 
-Note: It is recommended to add the 'context' folder to your .gitignore file.
-    `);
+Options:
+  -h, --help           Show help information
+  --configure          Set up configuration
+  --show               Show current configuration
+  --clear              Remove all generated context files insid ./code folder
+  --load               Load and import templates (like cursor rules)
+  -s, --snap           Create a snapshot in context/snap
+  -m "message"         Add a message to the context file
+  -i, --ignore <pattern> Add a glob pattern to exclude files/directories
+  --show-ignore        Show current exclusion patterns
+  --more               This will expand into more details 
+
+Examples:
+    cx ./ -m "hello world"  # Will generate context files and add "hello-world" to the name
+    cx -i "target/**"       # Exclude Rust target directory
+    cx ./ -s -m "before refactor"  # Create a snapshot with a message
+    cx --clear-all          # Remove all context files and directories
+  `);
     process.exit(0);
   }
 
@@ -206,7 +198,6 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
   // Load user configuration
   const config = getConfig();
   const options = {
-    minimize: config.minimize && !args.includes('--no-minimize'),
     snapshot: isSnapshot,
     template: isTemplate,
     templateName,
@@ -218,15 +209,6 @@ Note: It is recommended to add the 'context' folder to your .gitignore file.
 
   console.log(`🔍 Scanning directory: ${dir}`);
   const result = generateContext(dir, options);
-
-  // Handle --min flag to force generate a minimized version
-  if (args.includes('--min') && !options.minimize) {
-    console.log('📦 Generating additional minimized version...');
-    const minStats = compressFile(result.outputFile);
-    console.log(`✅ Minimized version created: ${minStats.compressedFile}`);
-    console.log(`   Compression ratio: ${minStats.compressionRatio}%`);
-    result.outputFile = minStats.compressedFile;
-  }
 
   // Skip clipboard for snapshots and templates
   if (config.autoClipboard && !isSnapshot && !isTemplate) {

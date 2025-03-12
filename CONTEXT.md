@@ -12,6 +12,7 @@ AICTX is a CLI tool designed to generate context files from source code, primari
 - **Configuration**: Customizable settings for output format and behavior
 - **Latest Context**: Automatically maintains a `latest-context.txt` file with the most recent context
 - **Template Loading**: Provides templates like cursor rules that can be imported into projects
+- **Binary File Exclusion**: Automatically excludes binary files and build artifacts from context generation
 
 ## Directory Structure
 
@@ -93,6 +94,59 @@ When importing templates, the system checks if a file with the same name already
 2. This prevents accidental overwrites and gives users control over their template imports
 3. The numbered suffix approach (e.g., `general-2.mdc`) allows multiple versions of the same template
 
+## Binary File Handling and Exclusion
+
+AICTX automatically excludes binary files and build artifacts from context generation to ensure clean, relevant context files:
+
+### Automatic Exclusions
+
+- **Binary File Extensions**: Files with extensions like `.o`, `.obj`, `.exe`, `.dll`, `.so`, `.dylib`, `.class`, `.jar`, etc. are automatically excluded
+- **Build Directories**: Common build directories like `target/`, `bin/`, `obj/`, `dist/`, `build/` are excluded
+- **Rust-specific Artifacts**: Special handling for Rust build artifacts with patterns like `.rcgu.o` and `.d` files
+- **Directory Structure Filtering**: The directory tree output is post-processed to remove any remaining references to binary files or build directories
+
+### Custom Exclusion Patterns
+
+Users can add custom exclusion patterns using the `-i/--ignore` flag:
+
+```bash
+# Exclude all .o files
+cx -i "*.o"
+
+# Exclude Rust target directory
+cx -i "target/**"
+
+# Exclude minified JavaScript files
+cx -i "**/*.min.js"
+```
+
+Exclusion patterns are saved in `~/.aictx/exclude.json` and applied to all future context generation operations.
+
+### Viewing Current Exclusions
+
+To view the current exclusion patterns:
+
+```bash
+cx --show-ignore
+```
+
+### Implementation Details
+
+The exclusion logic is implemented in multiple layers to ensure comprehensive filtering:
+
+1. **Directory Traversal**: The `findFiles` function in `lib/fileUtils.js` skips ignored directories entirely
+2. **File Filtering**: The `shouldProcessFile` function checks each file against multiple exclusion criteria
+3. **Tree Command Filtering**: The directory structure output is filtered using both command-line arguments and post-processing
+4. **Custom Pattern Matching**: User-defined patterns are applied using the `minimatch` library for glob pattern matching
+
+### Testing Binary Exclusions
+
+The test suite includes specific tests to verify that binary files and build directories are properly excluded:
+
+- Creates mock binary files and build directories
+- Verifies that they are excluded from the generated context
+- Ensures that legitimate source files are still included
+
 ## Development Status
 
 The project is functional and includes comprehensive test coverage. Future enhancements may include:
@@ -112,4 +166,6 @@ When making changes to the codebase:
 1. Ensure all new configuration options are added to the config.json structure
 2. Update help documentation when adding new features
 3. Maintain backward compatibility with existing context files
-4. Add appropriate tests for new functionality 
+4. Add appropriate tests for new functionality
+5. When modifying exclusion logic, ensure both the file filtering and directory structure output are updated
+6. Test with projects containing binary files (especially Rust projects with target/ directories) 

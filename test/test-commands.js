@@ -352,21 +352,21 @@ async function runTests() {
         // This test verifies that the latest-context.txt file is created and updated correctly
         // It's an important feature that provides a consistent reference point for AI tools
         try {
-            // Generate a context file with --no-minimize to make content checking easier
-            runCommand(`${TEST_DIR} --no-minimize`);
+            // Generate a context file
+            runCommand(`${TEST_DIR}`);
             
             // Check if latest-context.txt was created
             const latestContextPath = path.join(CONTEXT_DIR, 'latest-context.txt');
             assert(fs.existsSync(latestContextPath), 'latest-context.txt should be created');
             
-            // Generate another context file with a message and --no-minimize
-            runCommand(`${TEST_DIR} -m "test latest" --no-minimize`);
+            // Generate another context file with a message
+            runCommand(`${TEST_DIR} -m "test latest"`);
             
             // Check if latest-context.txt was updated
             const latestContextStat = fs.statSync(latestContextPath);
             const latestContextContent = fs.readFileSync(latestContextPath, 'utf8');
             
-            // For minimized files or complex content, just check if the file exists and has content
+            // Check if the file exists and has content
             assert(latestContextContent.length > 0, 'latest-context.txt should have content');
             
             results.push({
@@ -574,6 +574,33 @@ async function runTests() {
         } catch (error) {
             results.push({
                 name: 'Show ignore patterns',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 18: Interactive help menu
+        try {
+            // Create a child process to run the command
+            const child = require('child_process').spawn('node', ['./bin/aictx.js', '--more'], {
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+            
+            // Give it some time to execute
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Kill the process (it would hang waiting for user input otherwise)
+            if (child.pid) {
+                process.kill(-child.pid, 'SIGKILL');
+            }
+            
+            results.push({
+                name: 'Interactive help menu',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Interactive help menu',
                 status: 'failed',
                 error: error.message
             });

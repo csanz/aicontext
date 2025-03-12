@@ -30,7 +30,6 @@
   ],
   "defaultSettings": {
     "autoClipboard": false,
-    "minimize": true,
     "createLatestFile": true
   },
   "outputFormats": {
@@ -39,9 +38,5 @@
     "template": "template-[timestamp].txt",
     "message": "[message].txt",
     "latest": "latest-context.txt"
-  },
-  "compressionSettings": {
-    "enabled": true,
-    "minSuffix": ".min"
   }
 } 
