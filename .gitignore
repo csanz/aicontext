@@ -23,3 +23,8 @@ Thumbs.db
 
 # Project context files
 context/
+
+# Test files
+test/binary-test-files/
+# Specifically large files
+test/binary-test-files/large-text-file.txt

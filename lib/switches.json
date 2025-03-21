@@ -115,19 +115,22 @@
       "description": "Manage file and directory exclusion patterns",
       "commands": {
         "-i, --ignore <pattern>": "Add a glob pattern to exclude files/directories",
-        "--show-ignore": "Show current exclusion patterns"
+        "--show-ignore": "Show current exclusion patterns",
+        "--configure-ignore": "Configure and remove exclusion patterns"
       },
       "examples": [
         "cx -i \"*.o\"           # Exclude all .o files",
         "cx -i \"target/**\"     # Exclude Rust target directory",
         "cx -i \"**/*.min.js\"   # Exclude all minified JS files",
-        "cx --show-ignore      # List all exclusion patterns"
+        "cx --show-ignore      # List all exclusion patterns",
+        "cx --configure-ignore # Remove exclusion patterns"
       ],
       "notes": [
         "Exclusion patterns are saved in ~/.aictx/exclude.json",
         "Patterns use glob syntax (like .gitignore)",
         "Binary files are automatically excluded",
-        "Patterns are applied in addition to default exclusions"
+        "Patterns are applied in addition to default exclusions",
+        "Directories are automatically appended with /** to exclude all contents"
       ]
     }
   },

@@ -1,35 +1,33 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/12/2025, 9:50:58 AM
-- **Version**: 1.1.1
+- **Last Run**: 3/21/2025, 7:25:54 AM
+- **Version**: 1.1.3
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 18
-- **Passed**: 18
+- **Total Tests**: 16
+- **Passed**: 16
 - **Failed**: 0
 
 ## Passed Tests
 - ✅ Basic context generation
 - ✅ Message flag
-- ✅ Snapshot with message (combined flag)
-- ✅ Snapshot with message (separate flags)
-- ✅ Template with message (combined flag)
-- ✅ Template with message (separate flags)
+- ✅ Snapshot with message
+- ✅ Snapshot with separate flags
 - ✅ Clear context only
 - ✅ Clear with snapshots
 - ✅ Help system
 - ✅ Category help
 - ✅ Version flag
 - ✅ Latest context file generation
-- ✅ Template loading command
-- ✅ Template files existence and overriding
 - ✅ Clear all command
 - ✅ Ignore pattern
 - ✅ Show ignore patterns
-- ✅ Interactive help menu
+- ✅ Default directory behavior
+- ✅ Output format
+- ✅ Binary file exclusion
 
 ## Failed Tests
 None

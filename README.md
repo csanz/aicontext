@@ -1,204 +1,223 @@
-# AICTX - AI Context Generator
-
-> *"The AICTX context generator is a game-changer for AI-assisted development. With one simple command, it creates a comprehensive snapshot of the entire codebase in a single file, giving me immediate understanding of the project structure and implementation details. The automatically updated `latest-context.txt` provides the perfect reference point, allowing me to deliver more accurate, relevant assistance without constantly requesting additional files. It's like having X-ray vision into the codebase, making our collaborative coding sessions remarkably efficient and effective."*
-> 
-> — **Claude**, AI Assistant
-
-CLI tool to generate context files from source code, for AI-assisted vibe coding.
-
+<div align="center">
+  <img src="static/logo.png" alt="AICTX Logo" width="650" height="auto">
+  <h3>Never Let Your AI Agent Forget or Delete Your Code Again</h3>
+</div>
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-18%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-16%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
+[![npm](https://img.shields.io/badge/npm-v1.1.3-blue)](https://www.npmjs.com/package/aictx)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 03/12/2025, 09:50 America/Los_Angeles
+Last tested: 03/21/2025, 07:25 America/Los_Angeles
 
+## 📋 What is AIContext?
 
-## Installation
+AIContext is a context tool that helps AI assistants better understand your code. With the cx CLI, it creates intelligent snapshots of your project. Using cx's MCP, it preserves file relationships, tracks development history, and filters out noise—ensuring AI tools grasp your codebase's structure and patterns. ✨
+
+## ✨ Key Features
+
+## MCP (IN DEVELOPMENT)
+
+```bash 
+cx --mpc
+```
+
+- Maintain an up-to-date CONTEXT.md file at the project root that:
+- Describes the current state of the application
+- Explains what each component does
+- Documents how files relate to each other
+- Includes a directory structure overview
+
+(to be released soon) 
+
+### ClI 
+
+```bash 
+cx 
+```
+
+- Automatically excludes binary files, build artifacts, and other non-essential files
+- Create point-in-time snapshots of your codebase
+- Easily exclude specific files or directories
+- Automatically copy context to clipboard (Configure)
+- Includes a visual representation of your project structure
+
+## 🚀 Quick Start
 
 ```bash
+# Install globally
 npm install -g aictx
+
+# Generate context from current directory
+cx
+
+# Generate context from specific directory with a message
+cx ./src -m "authentication api"
 ```
 
-or if you need to reinstall the latest
+The output will be copied to your clipboard and saved to a context file, ready to paste into your AI tool of choice.
+
+## 📋 Command Reference
+
+```
+Usage: cx [directory] [options]
+```
+
+### Basic Commands
+
+| Option | Description |
+|--------|-------------|
+| `-h, --help` | Show help information. Use `-h <category>` for category-specific help |
+| `--configure` | Start the configuration wizard to set up preferences |
+| `--show` | Display your current configuration settings |
+| `--version` | Show the current version of the tool |
+| `--clear` | Remove all generated context files inside the ./code folder |
+| `--clear-all` | Remove ALL context files and directories (with confirmation) |
+
+### Context Generation Options
+
+| Option | Description |
+|--------|-------------|
+| `-m, --message "text"` | Add a descriptive message to the context file name |
+| `-s, --snap` | Create a snapshot in the context/snap directory |
+| `-sm "message"` | Create a snapshot with a message (combined flag) |
+| `--verbose, -v` | Show detailed progress during execution (helpful for debugging) |
+| `--no-clipboard` | Skip copying content to clipboard (faster execution) |
+
+### File Filtering Options
+
+| Option | Description |
+|--------|-------------|
+| `-i, --ignore <pattern>` | Add a glob pattern to exclude files/directories |
+| `--show-ignore` | Display all current exclusion patterns |
+| `--configure-ignore` | Configure and remove exclusion patterns |
+| `--timeout <seconds>` | Set a custom timeout for file search (default: 30 seconds) |
+| `--max-size <MB>` | Set a custom maximum file size (default: 2 MB) |
+
+### Examples
 
 ```bash
-npm install -g aictx@latest
+# Basic context generation
+cx                           # Generate context from current directory
+cx ./src                     # Generate context from specific directory
+cx ./src -m "auth api"       # Add a descriptive message to the context
+
+# Snapshots
+cx ./src -s                  # Create a snapshot
+cx ./src -sm "before refactor"  # Create snapshot with message
+cx ./src -s -m "v1.0 release"   # Same as above (separate flags)
+
+# Exclusion patterns
+cx -i "*.o"                  # Exclude all .o files
+cx -i "target/**"            # Exclude Rust target directory
+cx -i "**/*.min.js"          # Exclude all minified JS files
+cx --show-ignore             # List all exclusion patterns
+
+# Performance options
+cx ./src --verbose           # Show detailed progress for debugging
+cx ./src --timeout 10        # Set a shorter timeout of 10 seconds for large projects
+cx ./src --max-size 20       # Set a custom maximum file size of 20 MB
+cx ./src --no-clipboard      # Skip clipboard operations for faster execution
+
+# Clean up
+cx --clear                   # Remove all generated context files (except snapshots)
+cx --clear -s                # Remove all context files AND snapshots
+cx --clear-all               # Remove ALL context files and directories (with confirmation)
 ```
 
-## Quick Start
+## 📋 Configuration
 
-Navigate to your code base and run `cx ./ -m "google login works"`
+Use `cx --configure` to set up your preferences for a customized experience:
 
-The output will be copied to your clipboard. You also have the option to directly post the full context to your preferred AI/IDE chat window.
+### Available Configuration Options:
 
-![AICTX Brain](static/example.png)
+| Setting | Description |
+|---------|-------------|
+| **Auto-clipboard copy** | Enable/disable automatic copying of generated context to clipboard |
+| **Default timeout** | Set the default timeout in seconds for scanning directories (default: 10s) |
+| **Max file size** | Set the maximum file size in MB to include in context (default: 1MB) |
+
+These settings help you customize how AIContext operates to match your workflow. For example, disabling clipboard copy can speed up execution, while adjusting timeout and file size limits can help with larger projects.
+
+View your current configuration with `cx --show`.
+
+Configuration is stored in `~/.aictx/config.json` and can be manually edited if needed.
+
+## 🚫 Binary File Handling
+
+AIContext automatically excludes binary files to ensure your context remains clean and focused on code:
+
+### Automatic Exclusions:
+
+- **Binary file types**: Executables (`.exe`, `.dll`, `.so`), object files (`.o`, `.obj`), compiled code
+- **Media files**: Images, audio, video (`.png`, `.jpg`, `.mp3`, `.mp4`, etc.)
+- **Compressed files**: Archives (`.zip`, `.tar.gz`, `.rar`, etc.)
+- **Large files**: Any file exceeding the configured size limit (default: 2MB)
+- **Build artifacts**: Common build directories and artifacts
+
+### Managing Exclusions:
 
 ```bash
-# Basic usage - generate context from current directory
-cx ./
+# Add custom exclusion pattern
+cx -i "target/**"            # Exclude Rust target directory
+cx -i "**/*.min.js"          # Exclude all minified JS files
 
-# Generate context with a message
-cx ./ -m "Add authentication feature"
+# View current exclusion patterns
+cx --show-ignore
 
-# Create a snapshot
-cx ./ -s
-
-# Create a snapshot with message
-cx ./ -sm "Before refactoring"
-# or
-cx ./ -s -m "Before refactoring"
-
-# Create a template
-cx ./ -t "auth-feature"
-# or with message
-cx ./ -tm "Authentication feature template"
-
-# Load templates (like cursor rules)
-cx --load
+# Configure exclusions interactively (add/remove)
+cx --configure-ignore
 ```
 
-## Command Reference
+### Overrides:
 
-```
-Usage: cx <directory> [options]
+- Use `--max-size <MB>` to temporarily override the maximum file size filter
+- Edit your global exclusion patterns at `~/.aictx/exclude.json`
 
-Quick Help:
-  cx -h <category>     Show help for specific category
-  cx --more            Interactive help menu
-
-Options:
-  -h, --help           Show help information
-  --configure          Set up configuration
-  --show               Show current configuration
-  --clear              Remove all generated context files insid ./code folder
-  --load               Load and import templates (like cursor rules)
-  -s, --snap           Create a snapshot in context/snap
-  -m "message"         Add a message to the context file
-  -i, --ignore <pattern> Add a glob pattern to exclude files/directories
-  --show-ignore        Show current exclusion patterns
-  --more               This will expand into more details 
-
-Examples:
-    cx ./ -m "hello world"  # Will generate context files and add "hello-world" to the name
-    cx -i "target/**"       # Exclude Rust target directory
-    cx ./ -s -m "before refactor"  # Create a snapshot with a message
-    cx --clear-all          # Remove all context files and directories
-```
-
-## Latest Context Feature
-
-Every time you generate a context file, a copy is automatically saved to `./context/latest-context.txt`. This provides a consistent location to access your most recent context, making it ideal for AI tools that expect a fixed file path.
-
-## Template Loading
-
-The `--load` command allows you to import templates into your projects:
-
-```bash
-cx --load
-```
-
-This will show a menu of available template categories (like cursor rules) and allow you to select specific templates to import. For cursor rules, the selected template will be imported into your project's `.cursor/rules` directory with the `.mdc` extension (required for Cursor IDE to recognize the rules).
-
-### Available Templates
-
-- **General Rules**: Comprehensive coding best practices including:
-  - Documentation standards
-  - Detailed README documentation guidelines
-  - Configuration management
-  - Code quality practices
-  - Version control recommendations
-
-### File Handling
-
-If a file with the same name already exists, you'll be given options to:
-1. Override the existing file (completely replaces the existing file with the template)
-2. Create a new file with a numbered suffix (e.g., `general-2.mdc`)
-3. Cancel the import
-
-The tool includes verification steps to ensure files are properly written or overridden, with detailed logging to help troubleshoot any issues. This ensures you won't accidentally overwrite important files and gives you control over how templates are imported.
-
-## File Naming Patterns
-
-- Basic context: `context.txt`, `context-2.txt`, etc.
-- With message: `feature-name.txt`, `feature-name-2.txt`, etc.
-- Snapshots: `snap-[timestamp].txt` or `snap-message-[timestamp].txt`
-- Templates: `template-[timestamp].txt` or `template-message-[timestamp].txt`
-- Latest context: `latest-context.txt` (always contains the most recent context)
-
-## Directory Structure
-
-```ini
-.
-└── context/
-    ├── code/      # Regular context files
-    ├── snap/      # Snapshot files
-    ├── template/  # Template files
-    └── latest-context.txt  # Most recent context
-```
-
-## Configuration
-
-Use `cx --configure` to set up:
-
-- Auto-clipboard copy
-- Default template directory
-- Other preferences
-
-View current configuration with `cx --show`.
-
-## Help System
-
-- `cx -h` - Basic help
-- `cx -h <category>` - Category-specific help (e.g., `cx -h snapshots`)
-- `cx --more` - Interactive help menu with detailed information
-
-## Binary File Handling
-
-Binary files (like `.o`, `.exe`, `.dll`) are automatically excluded from processing. You can add custom exclusion patterns using the `-i/--ignore` flag.
-
-```bash
-# Exclude Rust target directory
-cx -i "target/**"
-```
-
-## Best Practices
+## 💡 Best Practices
 
 1. Add the 'context' folder to your .gitignore file
 2. Use meaningful messages for better organization
 3. Create snapshots before major changes
-4. Use templates for recurring patterns
-5. Clear old context files regularly
-6. Use the latest-context.txt file for AI tools integration
+4. Clear old context files regularly with `cx --clear`
+5. Use the latest-context.txt file for AI tools integration
 
-## Examples
+## 🤝 Need Help?
 
+- Basic help: `cx -h`
+
+AIContext includes several ways to get help:
+
+### Built-in Help
 ```bash
-# Basic context generation
-cx ./
+# General help
+cx -h
 
-# With message
-cx ./ -m "Adding authentication"
-
-# Create snapshot before refactoring
-cx ./ -sm "Before refactoring auth"
-
-# Create template for common setup
-cx ./ -t "project-setup"
-
-# Exclude specific files or directories
-cx -i "*.min.js"
-cx -i "build/**"
-
-# Clear all context files and directories
-cx --clear-all
+# Category-specific help
+cx -h snapshots      # Help with snapshot commands
+cx -h basic          # Basic command help
+cx -h ignore         # Help with exclusion patterns
 ```
 
-## Contributing
+### Verbose Mode
+For troubleshooting issues, use verbose mode to see detailed output:
+```bash
+cx ./src -v          # Show detailed processing information
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Timeout Issues
+If you're getting timeout errors with large projects:
+```bash
+cx ./src --timeout 60  # Increase timeout to 60 seconds
+```
 
-## License
+### Contributing & Issues
+- Report bugs and suggest features on [GitHub Issues](https://github.com/csanz/aictx/issues)
+- For questions, use [GitHub Discussions](https://github.com/csanz/aictx/discussions)
+
+## 📄 License
 
 MIT

@@ -1,0 +1,5 @@
+[![Test Status](https://img.shields.io/badge/tests-18%20passed-yellow.svg)](TESTS.md)
+[![Coverage](https://img.shields.io/badge/coverage-95%25-yellow.svg)](TESTS.md)
+[![npm](https://img.shields.io/badge/npm-v0.2.41-blue)](https://www.npmjs.com/package/aictx)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
