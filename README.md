@@ -53,16 +53,20 @@ cx
 
 ## 🚀 Quick Start
 
+Install globally
 ```bash
-# Install globally
 npm install -g aicontextjs
-
-or npm install -g aicontextjs@latest
-
-# Generate context from current directory
+```
+or force the latest 
+```bash
+npm install -g aicontextjs@latest
+```
+Generate context from current directory
+```bash
 cx
-
-# Generate context from specific directory with a message
+```
+Generate context from specific directory with a message
+```bash
 cx ./src -m "authentication api"
 ```
 
