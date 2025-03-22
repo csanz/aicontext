@@ -394,8 +394,11 @@ async function runTests() {
             console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} -h`)}`);
             const output = runCommand('-h');
             assert(output.includes('Usage:'), 'Help should show usage');
+            assert(output.includes('--version'), 'Help should include the version option');
+            assert(output.includes('--load-cursor-rules'), 'Help should include the load-cursor-rules option');
             assert(!output.includes('--menu'), 'Help should not include the removed --menu option');
             assert(!output.includes('--more'), 'Help should not include the removed --more option');
+            assert(!output.includes('--load '), 'Help should not include the old --load option');
             results.push({
                 name: 'Help system',
                 status: 'passed'
@@ -673,6 +676,80 @@ async function runTests() {
         } catch (error) {
             results.push({
                 name: 'Binary file exclusion',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 17: Load cursor rules
+        try {
+            // Remove .cursor directory if it exists
+            const cursorDir = path.join(process.cwd(), '.cursor');
+            if (fs.existsSync(cursorDir)) {
+                fs.rmSync(cursorDir, { recursive: true, force: true });
+            }
+            
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --load-cursor-rules`)}`);
+            
+            // Run load-cursor-rules command
+            const child = require('child_process').spawn('node', ['./bin/cx.js', '--load-cursor-rules'], {
+                stdio: ['pipe', 'pipe', 'pipe']
+            });
+            
+            // Wait for the process to complete
+            await new Promise((resolve) => {
+                child.on('close', resolve);
+            });
+            
+            // Check that the directory and file were created
+            const rulesDir = path.join(cursorDir, 'rules');
+            const ruleFile = path.join(rulesDir, 'general-rules.md');
+            
+            assert(fs.existsSync(rulesDir), '.cursor/rules directory should be created');
+            assert(fs.existsSync(ruleFile), 'general-rules.md file should be created');
+            
+            // Check the file contents
+            const fileContent = fs.readFileSync(ruleFile, 'utf8');
+            assert(fileContent.includes('Codebase Maintenance Rules'), 'File should contain the rules content');
+            
+            results.push({
+                name: 'Load cursor rules',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Load cursor rules',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 18: Invalid switch detection
+        try {
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --invalid-switch`)}`);
+            
+            // We expect this to fail with an exit code of 1
+            let errorThrown = false;
+            try {
+                runCommand('--invalid-switch');
+            } catch (error) {
+                errorThrown = true;
+                // Verify the error message
+                assert(error.stdout && error.stdout.includes('Error: Invalid switch detected'), 
+                       'Should show error message for invalid switch');
+                assert(error.stdout && error.stdout.includes('Use cx -h to see a list of valid switches'), 
+                       'Should suggest using help command');
+            }
+            
+            assert(errorThrown, 'Command should throw an error for invalid switch');
+            
+            results.push({
+                name: 'Invalid switch detection',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Invalid switch detection',
                 status: 'failed',
                 error: error.message
             });

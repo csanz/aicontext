@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/21/2025, 7:25:54 AM
-- **Version**: 1.1.3
+- **Last Run**: 3/22/2025, 3:20:37 PM
+- **Version**: 1.1.4
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 16
-- **Passed**: 16
+- **Total Tests**: 18
+- **Passed**: 18
 - **Failed**: 0
 
 ## Passed Tests
@@ -28,6 +28,8 @@
 - ✅ Default directory behavior
 - ✅ Output format
 - ✅ Binary file exclusion
+- ✅ Load cursor rules
+- ✅ Invalid switch detection
 
 ## Failed Tests
 None

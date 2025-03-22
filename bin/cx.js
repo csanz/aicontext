@@ -19,6 +19,95 @@ const readline = require('readline');
 const chalk = require('chalk');
 
 /**
+ * Load cursor rules into the project
+ * Copies general-rules template file to the .cursor/rules directory
+ */
+function loadCursorRules() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  console.log(chalk.blue('Preparing to load cursor rules...'));
+  
+  // Check if .cursor/rules directory exists, create if not
+  const cursorRulesDir = path.join(process.cwd(), '.cursor', 'rules');
+  if (!fs.existsSync(cursorRulesDir)) {
+    fs.mkdirSync(cursorRulesDir, { recursive: true });
+  }
+  
+  // Identify source and target files
+  const sourceFile = path.join(__dirname, '../templates/general-rules.template.md');
+  const targetFile = path.join(cursorRulesDir, 'general-rules.md');
+  
+  // Check if target file already exists
+  const fileExists = fs.existsSync(targetFile);
+  
+  // If file exists, prompt for confirmation to overwrite
+  if (fileExists) {
+    rl.question(chalk.yellow(`⚠️ The file ${targetFile} already exists. Do you want to overwrite it? (y/n): `), (answer) => {
+      if (answer.toLowerCase() === 'y') {
+        copyRuleFile(sourceFile, targetFile);
+      } else {
+        console.log(chalk.blue('Operation cancelled.'));
+      }
+      rl.close();
+    });
+  } else {
+    // If file doesn't exist, copy directly and close readline
+    copyRuleFile(sourceFile, targetFile);
+    rl.close();
+  }
+}
+
+/**
+ * Helper function to copy the rule file
+ */
+function copyRuleFile(source, target) {
+  if (fs.existsSync(source)) {
+    fs.copyFileSync(source, target);
+    console.log(chalk.green(`✅ Cursor rule loaded: ${target}`));
+  } else {
+    console.log(chalk.red(`❌ Template file not found: ${source}`));
+  }
+}
+
+/**
+ * Check if the provided arguments contain valid switches only
+ * @param {string[]} args - Command line arguments
+ * @returns {boolean} - Whether all switches are valid
+ */
+function hasValidSwitches(args) {
+  // List of all valid switches
+  const validSwitches = [
+    '-h', '--help', '--version',
+    '--configure', '--show', '--clear', '--clear-all',
+    '-s', '--snap', '-m', '--message', '-sm',
+    '-i', '--ignore', '--show-ignore', '--configure-ignore',
+    '-v', '--verbose', '--timeout', '--max-size', '--no-clipboard',
+    '--load-cursor-rules'
+  ];
+  
+  // Check each argument that starts with a dash
+  for (const arg of args) {
+    if (arg.startsWith('-')) {
+      // Skip checking values for switches that accept parameters
+      const valueSwitches = ['--timeout', '--max-size', '-m', '--message', '-i', '--ignore'];
+      const isValueForSwitch = args.some((a, i) => 
+        i > 0 && valueSwitches.includes(args[i-1]) && a === arg
+      );
+      
+      if (!isValueForSwitch && !validSwitches.includes(arg)) {
+        console.log(chalk.red(`❌ Error: Invalid switch detected: ${arg}`));
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+/**
  * Main function that processes command line arguments and executes the appropriate action
  * Handles all CLI commands including context generation, snapshots, and configuration
  */
@@ -30,6 +119,18 @@ async function main() {
     const packageJson = require('../package.json');
     console.log(packageJson.version);
     process.exit(0);
+  }
+
+  // Check for invalid switches
+  if (!hasValidSwitches(args)) {
+    console.log(chalk.yellow('Use cx -h to see a list of valid switches'));
+    process.exit(1);
+  }
+  
+  // Handle --load-cursor-rules switch
+  if (args.includes('--load-cursor-rules')) {
+    loadCursorRules();
+    return;
   }
 
   // Handle exclusion patterns
@@ -69,8 +170,10 @@ Quick Help:
 
 Options:
   -h, --help           Show help information
+  --version            Show current version
   --configure          Set up configuration
   --show               Show current configuration
+  --load-cursor-rules  Load and import cursor rules
   --clear              Remove all generated context files insid ./code folder
   -s, --snap           Create a snapshot in context/snap
   -m "message"         Add a message to the context file

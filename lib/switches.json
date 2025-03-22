@@ -7,13 +7,14 @@
         "--configure": "Set up configuration",
         "--show": "Show current configuration",
         "--clear": "Remove all generated context files",
-        "--load": "Load and import templates (like cursor rules)"
+        "--load-cursor-rules": "Load and import cursor rules to .cursor/rules/"
       },
       "examples": [
         "cx -h                   # Show general help",
         "cx -h basic            # Show help for basic commands",
         "cx --configure         # Start configuration wizard",
-        "cx --show             # Display current settings"
+        "cx --show             # Display current settings",
+        "cx --load-cursor-rules # Load cursor rules"
       ],
       "notes": [
         "Use -h followed by a category name for detailed help",

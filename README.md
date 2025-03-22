@@ -1,21 +1,27 @@
 <div align="center">
-  <img src="static/logo.png" alt="AICTX Logo" width="650" height="auto">
+  <img src="static/logobw.png" alt="AIContext Logo" width="650" height="auto">
   <h3>Never Let Your AI Agent Forget or Delete Your Code Again</h3>
 </div>
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-16%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-18%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.1.3-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.1.4-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 03/21/2025, 07:25 America/Los_Angeles
+Last tested: 03/22/2025, 15:20 America/Los_Angeles
 
 ## 📋 What is AIContext?
 
 AIContext is a context tool that helps AI assistants better understand your code. With the cx CLI, it creates intelligent snapshots of your project. Using cx's MCP, it preserves file relationships, tracks development history, and filters out noise—ensuring AI tools grasp your codebase's structure and patterns. ✨
+
+Simply run `cx` and you get:
+
+<div align="center">
+  <img src="static/example.png" alt="AI Context Example" width="500" height="auto">
+</div>
 
 ## ✨ Key Features
 
