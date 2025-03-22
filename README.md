@@ -55,7 +55,9 @@ cx
 
 ```bash
 # Install globally
-npm install -g aictx
+npm install -g aicontextjs
+
+or npm install -g aicontextjs@latest
 
 # Generate context from current directory
 cx
