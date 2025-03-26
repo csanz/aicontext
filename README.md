@@ -7,11 +7,11 @@
 
 [![Test Status](https://img.shields.io/badge/tests-18%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.1.4-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.1.6-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 03/22/2025, 15:20 America/Los_Angeles
+Last tested: 03/25/2025, 23:15 America/Los_Angeles
 
 ## 📋 What is AIContext?
 
@@ -183,6 +183,30 @@ cx --show-ignore
 # Configure exclusions interactively (add/remove)
 cx --configure-ignore
 ```
+
+### Project-Level Exclusions:
+
+You can create a `aictx-exclusions.json` file at the root of your project to customize directories and files that should always be excluded:
+
+```json
+{
+  "alwaysExcludedDirectories": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".git",
+    "target"
+  ],
+  "alwaysExcludedFiles": [
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml"
+  ]
+}
+```
+
+This configuration ensures that certain directories like `node_modules` will be explicitly skipped during scanning, which improves performance and avoids unnecessary file processing.
 
 ### Overrides:
 

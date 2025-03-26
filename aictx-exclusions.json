@@ -1,0 +1,24 @@
+{
+  "alwaysExcludedDirectories": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".git",
+    ".idea",
+    ".vscode",
+    "__tests__",
+    "__mocks__",
+    ".next",
+    ".cache",
+    "context",
+    "target"
+  ],
+  "alwaysExcludedFiles": [
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    ".DS_Store",
+    "Thumbs.db"
+  ]
+} 

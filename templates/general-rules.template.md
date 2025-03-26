@@ -12,6 +12,12 @@
 - Add clear, descriptive comments to all files explaining their purpose and key functionality
 - Use JSDoc or similar documentation standards for functions and classes
 - Document edge cases and complex logic with examples
+- Create a CONTEXT.md at the root if it doesn't exist. 
+- Maintain an up-to-date CONTEXT.md file at the project root that:
+  - Describes the current state of the application
+  - Explains what each component does
+  - Documents how files relate to each other
+  - Includes a directory structure overview
 
 ## README Documentation
 - Ensure the README.md is comprehensive and well-structured:
