@@ -523,42 +523,147 @@ async function runTests() {
             });
         }
 
-        // Test 12: Ignore pattern
+        // Test 12: Ignore add pattern
+        try {
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --ignore add "*.o"`)}`);
+            runCommand('--ignore add "*.o"');
+            const exclusions = require('../lib/configHandler').getExclusions();
+            assert(exclusions.patterns.includes('*.o'), 'Exclusion pattern should be added');
+            results.push({
+                name: 'Ignore add pattern',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Ignore add pattern',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 13: Ignore show command
+        try {
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --ignore show`)}`);
+            const output = runCommand('--ignore show');
+            assert(output.includes('*.o'), 'Output should include the added ignore pattern');
+            
+            // We don't need to check for the help message here because patterns exist
+            // and the help message only appears when no patterns exist
+            
+            results.push({
+                name: 'Ignore show command',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Ignore show command',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 14: Ignore test command
+        try {
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --ignore test`)}`);
+            const output = runCommand('--ignore test');
+            assert(output.includes('Current directory:'), 'Output should show the current directory');
+            assert(output.includes('Directory Structure with Current Exclusions:'), 'Output should show directory structure');
+            results.push({
+                name: 'Ignore test command',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Ignore test command',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 15: Ignore clear command
+        try {
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --ignore clear`)}`);
+            const output = runCommand('--ignore clear');
+            assert(output.includes('✅ Cleared all exclusion patterns'), 'Output should confirm patterns cleared');
+            
+            // Verify patterns are actually cleared
+            const exclusions = require('../lib/configHandler').getExclusions();
+            assert(exclusions.patterns.length === 0, 'Exclusion patterns should be empty after clear');
+            
+            results.push({
+                name: 'Ignore clear command',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Ignore clear command',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 15.5: Verify empty exclusions help message
+        try {
+            console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --ignore show (after clear)`)}`);
+            const output = runCommand('--ignore show');
+            
+            // After clearing, we should see the help message with the new command format
+            assert(output.includes('No custom exclusion patterns defined.'), 'Output should indicate no patterns');
+            assert(output.includes('cx --ignore add "pattern"'), 'Help should reference new command format');
+            assert(!output.includes('cx -i "pattern"'), 'Help should not reference old command format');
+            
+            results.push({
+                name: 'Empty exclusions help message',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Empty exclusions help message',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 16: Legacy ignore pattern (backward compatibility)
         try {
             console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} -i "*.o"`)}`);
             runCommand('-i "*.o"');
             const exclusions = require('../lib/configHandler').getExclusions();
-            assert(exclusions.patterns.includes('*.o'), 'Exclusion pattern should be added');
+            assert(exclusions.patterns.includes('*.o'), 'Exclusion pattern should be added with legacy command');
             results.push({
-                name: 'Ignore pattern',
+                name: 'Legacy ignore pattern',
                 status: 'passed'
             });
         } catch (error) {
             results.push({
-                name: 'Ignore pattern',
+                name: 'Legacy ignore pattern',
                 status: 'failed',
                 error: error.message
             });
         }
 
-        // Test 13: Show ignore patterns
+        // Test 17: Legacy show ignore patterns (backward compatibility)
         try {
             console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --show-ignore`)}`);
             const output = runCommand('--show-ignore');
-            assert(output.includes('*.o'), 'Output should include the added ignore pattern');
+            assert(output.includes('*.o'), 'Output should include the added ignore pattern using legacy command');
+            
+            // We don't need to check for the help message here because patterns exist
+            // and the help message only appears when no patterns exist
+            
             results.push({
-                name: 'Show ignore patterns',
+                name: 'Legacy show ignore patterns',
                 status: 'passed'
             });
         } catch (error) {
             results.push({
-                name: 'Show ignore patterns',
+                name: 'Legacy show ignore patterns',
                 status: 'failed',
                 error: error.message
             });
         }
 
-        // Test 14: Default directory behavior
+        // Test 18: Default directory behavior
         try {
             // Create a test file in the current directory
             const testFilePath = path.join(process.cwd(), 'test-default-dir.js');
@@ -589,7 +694,7 @@ async function runTests() {
             });
         }
 
-        // Test 15: Output format
+        // Test 19: Output format
         try {
             const mockMsg = MOCK_TESTS ? chalk.dim(' (Using mock response)') : '';
             console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR}`)}${mockMsg}`);
@@ -620,7 +725,7 @@ async function runTests() {
             });
         }
 
-        // Test 16: Binary file exclusion
+        // Test 20: Binary file exclusion
         try {
             // Create a binary test file
             const binaryTestDir = path.join(TEST_DIR, 'binary-test');
@@ -681,7 +786,7 @@ async function runTests() {
             });
         }
 
-        // Test 17: Load cursor rules
+        // Test 21: Load cursor rules
         try {
             // Remove .cursor directory if it exists
             const cursorDir = path.join(process.cwd(), '.cursor');
@@ -724,7 +829,7 @@ async function runTests() {
             });
         }
 
-        // Test 18: Invalid switch detection
+        // Test 22: Invalid switch detection
         try {
             console.log(`\📋 Running: ${chalk.blue(`${CLI_COMMAND} --invalid-switch`)}`);
             

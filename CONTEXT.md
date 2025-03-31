@@ -107,27 +107,32 @@ AICTX automatically excludes binary files and build artifacts from context gener
 
 ### Custom Exclusion Patterns
 
-Users can add custom exclusion patterns using the `-i/--ignore` flag:
+Users can add custom exclusion patterns using the new subcommand structure:
 
 ```bash
-# Exclude all .o files
-cx -i "*.o"
+# Add exclusion patterns
+cx --ignore add "*.o"         # Exclude all .o files
+cx --ignore add "target/**"   # Exclude Rust target directory
+cx --ignore add "**/*.min.js" # Exclude minified JavaScript files
 
-# Exclude Rust target directory
-cx -i "target/**"
+# View current exclusions
+cx --ignore show
 
-# Exclude minified JavaScript files
-cx -i "**/*.min.js"
+# Test current exclusions
+cx --ignore test
+
+# Clear all exclusions
+cx --ignore clear
 ```
 
-Exclusion patterns are saved in `~/.aictx/exclude.json` and applied to all future context generation operations.
+Exclusion patterns are stored in `.aicontext/ignore.json` in the current directory, allowing for project-specific exclusions.
 
 ### Viewing Current Exclusions
 
 To view the current exclusion patterns:
 
 ```bash
-cx --show-ignore
+cx --ignore show
 ```
 
 ### Implementation Details
@@ -138,6 +143,8 @@ The exclusion logic is implemented in multiple layers to ensure comprehensive fi
 2. **File Filtering**: The `shouldProcessFile` function checks each file against multiple exclusion criteria
 3. **Tree Command Filtering**: The directory structure output is filtered using both command-line arguments and post-processing
 4. **Custom Pattern Matching**: User-defined patterns are applied using the `minimatch` library for glob pattern matching
+5. **Local Exclusions**: Project-specific exclusions are stored in `.aicontext/ignore.json` in the project directory
+6. **Always Excluded Directories**: Critical directories like `node_modules`, `dist`, and `.git` are always excluded regardless of custom settings
 
 ### Testing Binary Exclusions
 

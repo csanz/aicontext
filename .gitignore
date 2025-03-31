@@ -29,3 +29,5 @@ context/
 test/binary-test-files/
 # Specifically large files
 test/binary-test-files/large-text-file.txt
+
+TECHDESIGN.md

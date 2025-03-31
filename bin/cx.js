@@ -8,7 +8,7 @@
 
 const { generateContext } = require('../lib/contextGenerator');
 const checkGitIgnore = require('../lib/gitignoreHandler');
-const { getConfig, showConfig, configure, CONFIG_DIR, addExclusion, showExclusions, configureIgnore } = require('../lib/configHandler');
+const { getConfig, showConfig, configure, CONFIG_DIR, addExclusion, showExclusions, configureIgnore, clearExclusions, testExclusions } = require('../lib/configHandler');
 const { clearContextFiles } = require('../lib/cleanupUtils');
 const { showHelp } = require('../lib/helpHandler');
 const { MAX_FILE_SIZE_MB } = require('../lib/constants');
@@ -135,19 +135,55 @@ async function main() {
 
   // Handle exclusion patterns
   const ignoreIndex = args.findIndex(arg => arg === '-i' || arg === '--ignore');
-  if (ignoreIndex !== -1 && args[ignoreIndex + 1]) {
-    const pattern = args[ignoreIndex + 1];
-    addExclusion(pattern);
-    return;
+  if (ignoreIndex !== -1) {
+    const subcommand = args[ignoreIndex + 1];
+    
+    if (!subcommand) {
+      console.log(chalk.yellow('Usage: cx --ignore <subcommand>'));
+      console.log('Available subcommands:');
+      console.log('  add <pattern>   - Add a new exclusion pattern');
+      console.log('  show            - Show current exclusion patterns');
+      console.log('  clear           - Remove all exclusion patterns');
+      console.log('  test            - Test current exclusions with directory tree');
+      return;
+    }
+    
+    switch (subcommand) {
+      case 'show':
+        showExclusions();
+        return;
+      case 'clear':
+        clearExclusions();
+        return;
+      case 'test':
+        testExclusions();
+        return;
+      case 'add':
+        const pattern = args[ignoreIndex + 2];
+        if (!pattern) {
+          console.log(chalk.yellow('Usage: cx --ignore add <pattern>'));
+          console.log('Examples:');
+          console.log('  cx --ignore add "*.log"');
+          console.log('  cx --ignore add "build"');
+          console.log('  cx --ignore add "./ecs"');
+          return;
+        }
+        addExclusion(pattern);
+        return;
+      default:
+        // For backward compatibility, treat the subcommand as a pattern
+        addExclusion(subcommand);
+        return;
+    }
   }
 
-  // Show exclusion patterns and prompt to remove them
+  // Legacy: Show exclusion patterns 
   if (args.includes('--show-ignore')) {
-    configureIgnore();  // This function shows patterns and prompts to remove them
+    showExclusions();
     return;
   }
 
-  // Configure ignore patterns
+  // Legacy: Configure ignore patterns
   if (args.includes('--configure-ignore')) {
     configureIgnore();
     return;
@@ -178,8 +214,11 @@ Options:
   -s, --snap           Create a snapshot in context/snap
   -m "message"         Add a message to the context file
   -sm "message"        Create a snapshot with a message (combined flag)
-  -i, --ignore <pattern> Add a glob pattern to exclude files/directories
-  --show-ignore        Show current exclusion patterns
+  --ignore <subcommand> Manage ignore patterns:
+      --ignore add <pattern>  Add pattern to exclude files/directories
+      --ignore show           Display current exclusion patterns
+      --ignore clear          Remove all exclusion patterns
+      --ignore test           Show directory tree with current exclusions
   -v, --verbose        Show detailed progress during execution (helpful for debugging)
   --timeout <seconds>  Set a custom timeout for file search (default: 30 seconds)
   --max-size <MB>      Set a custom maximum file size (default: ${MAX_FILE_SIZE_MB} MB)
@@ -187,7 +226,10 @@ Options:
 
 Examples:
     cx ./ -m "hello world"  # Will generate context files and add "hello-world" to the name
-    cx -i "target/**"       # Exclude Rust target directory
+    cx --ignore add "./ecs"  # Exclude the ecs directory from current working directory
+    cx --ignore add "*.log"  # Exclude all log files from current working directory
+    cx --ignore show        # Display current exclusion patterns
+    cx --ignore test        # Test exclusions by showing directory tree
     cx ./ -sm "before refactor"  # Create a snapshot with a message
     cx --clear-all          # Remove all context files and directories
     cx ./ --verbose         # Show detailed progress for debugging

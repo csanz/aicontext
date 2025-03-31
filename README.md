@@ -1,17 +1,17 @@
 <div align="center">
-  <img src="static/logobw.png" alt="AIContext Logo" width="650" height="auto">
+  <img src="static/logobw.png" alt="AIContext Logo" width="500" height="auto">
   <h3>Never Let Your AI Agent Forget or Delete Your Code Again</h3>
 </div>
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-18%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-23%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.1.7-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.2.0-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 03/25/2025, 23:55 America/Los_Angeles
+Last tested: 03/30/2025, 17:33 America/Los_Angeles
 
 ## 📋 What is AIContext?
 
@@ -103,9 +103,10 @@ Usage: cx [directory] [options]
 
 | Option | Description |
 |--------|-------------|
-| `-i, --ignore <pattern>` | Add a glob pattern to exclude files/directories |
-| `--show-ignore` | Display all current exclusion patterns |
-| `--configure-ignore` | Configure and remove exclusion patterns |
+| `--ignore add <pattern>` | Add a glob pattern to exclude files/directories (stored in .aicontext/ignore.json) |
+| `--ignore show` | Display all current exclusion patterns |
+| `--ignore clear` | Remove all exclusion patterns |
+| `--ignore test` | Test the exclusions by showing directory tree with current exclusions |
 | `--timeout <seconds>` | Set a custom timeout for file search (default: 30 seconds) |
 | `--max-size <MB>` | Set a custom maximum file size (default: 2 MB) |
 
@@ -156,7 +157,7 @@ These settings help you customize how AIContext operates to match your workflow.
 
 View your current configuration with `cx --show`.
 
-Configuration is stored in `~/.aictx/config.json` and can be manually edited if needed.
+Configuration is stored in `~/.aicontext/config.json` and can be manually edited if needed.
 
 ## 🚫 Binary File Handling
 
@@ -173,45 +174,61 @@ AIContext automatically excludes binary files to ensure your context remains cle
 ### Managing Exclusions:
 
 ```bash
-# Add custom exclusion pattern
-cx -i "target/**"            # Exclude Rust target directory
-cx -i "**/*.min.js"          # Exclude all minified JS files
+# Add custom exclusion pattern (stored in .aicontext/ignore.json in current directory)
+cx --ignore add "target/**"    # Exclude Rust target directory
+cx --ignore add "*.min.js"     # Exclude all minified JS files
+cx --ignore add "./ecs"        # Exclude a specific directory by path
 
 # View current exclusion patterns
-cx --show-ignore
+cx --ignore show
 
-# Configure exclusions interactively (add/remove)
-cx --configure-ignore
+# Test exclusions with directory tree view
+cx --ignore test
+
+# Clear all exclusion patterns
+cx --ignore clear
 ```
 
-### Project-Level Exclusions:
+### Directory Exclusions:
 
-You can create a `aictx-exclusions.json` file at the root of your project to customize directories and files that should always be excluded:
+You can exclude directories in several ways:
+1. Specify just the directory name: `cx --ignore add "build"`
+2. Add a relative path: `cx --ignore add "./ecs"`
+3. Use glob patterns: `cx --ignore add "test/**"`
+
+### Local Exclusions:
+
+For project-specific exclusions, AIContext uses a `.aicontext/ignore.json` file in each directory where you run the tool. This allows you to have different exclusion patterns for different projects or subdirectories.
 
 ```json
 {
-  "alwaysExcludedDirectories": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    ".git",
-    "target"
-  ],
-  "alwaysExcludedFiles": [
-    "package-lock.json",
-    "yarn.lock",
-    "pnpm-lock.yaml"
-  ]
+  "patterns": ["*.log", "temp/*", "**/*.min.js"],
+  "alwaysExcludedDirectories": ["logs", "temp-data"],
+  "alwaysExcludedFiles": ["private.config"]
 }
 ```
 
-This configuration ensures that certain directories like `node_modules` will be explicitly skipped during scanning, which improves performance and avoids unnecessary file processing.
+The `.aicontext` directory is created automatically in your project when you run any `--ignore` related command. You can also create it manually and edit the `ignore.json` file directly.
 
-### Overrides:
+#### How Ignore Patterns Work:
 
-- Use `--max-size <MB>` to temporarily override the maximum file size filter
-- Edit your global exclusion patterns at `~/.aictx/exclude.json`
+- **Simple glob patterns**: `*.log` excludes all files with the .log extension
+- **Directory specific**: `logs/**` excludes everything in the logs directory
+- **Complex patterns**: `**/*.min.js` excludes all minified JavaScript files in any directory
+- **Extension groups**: `*.{jpg,png,gif}` excludes multiple file extensions
+
+This approach ensures:
+- Each project can have its own exclusion rules
+- Exclusions are relative to the current working directory
+- Teams can share exclusion patterns by committing `.aicontext/ignore.json` to version control
+
+Critical directories like `node_modules`, `dist`, and `.git` are always excluded regardless of local settings.
+
+### Configuration Locations:
+
+- **Local Exclusions**: Stored in `.aicontext/ignore.json` in the current directory
+- **User Configuration**: Stored in `~/.aicontext/config.json`
+- **Global Exclusions**: Stored in `~/.aicontext/exclude.json` (legacy, local exclusions preferred)
 
 ## 💡 Best Practices
 
@@ -220,6 +237,10 @@ This configuration ensures that certain directories like `node_modules` will be 
 3. Create snapshots before major changes
 4. Clear old context files regularly with `cx --clear`
 5. Use the latest-context.txt file for AI tools integration
+
+## 📝 Updates
+
+See [UPDATES.md](UPDATES.md) for a history of changes and new features.
 
 ## 🤝 Need Help?
 

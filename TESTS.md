@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/25/2025, 11:55:45 PM
-- **Version**: 1.1.7
+- **Last Run**: 3/30/2025, 5:33:31 PM
+- **Version**: 1.2.0
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 18
-- **Passed**: 18
+- **Total Tests**: 23
+- **Passed**: 23
 - **Failed**: 0
 
 ## Passed Tests
@@ -23,8 +23,13 @@
 - ✅ Version flag
 - ✅ Latest context file generation
 - ✅ Clear all command
-- ✅ Ignore pattern
-- ✅ Show ignore patterns
+- ✅ Ignore add pattern
+- ✅ Ignore show command
+- ✅ Ignore test command
+- ✅ Ignore clear command
+- ✅ Empty exclusions help message
+- ✅ Legacy ignore pattern
+- ✅ Legacy show ignore patterns
 - ✅ Default directory behavior
 - ✅ Output format
 - ✅ Binary file exclusion
