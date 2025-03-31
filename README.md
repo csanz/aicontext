@@ -28,7 +28,7 @@ Simply run `cx` and you get:
 ## MCP (IN DEVELOPMENT)
 
 ```bash 
-cx --mpc
+cx --mcp
 ```
 
 - Maintain an up-to-date CONTEXT.md file at the project root that:
