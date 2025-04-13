@@ -2,6 +2,14 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.3.2 (April 2024)
+
+### Bug Fixes
+- **Fixed**: Binary file handling in directory tree output
+  - Added BINARY_EXTENSIONS check to tree generation
+  - Properly excludes binary files from tree view
+  - Improved file extension detection
+
 ## Version 1.3.0 (April 2024)
 
 ### Directory Structure Changes
