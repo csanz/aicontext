@@ -3,6 +3,8 @@
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
+📢 **Latest Update (v1.3.0)**: Directory structure standardization, improved command handling, and enhanced testing. [See all updates](UPDATES.md)
+
 ## Test Status 🧪
 
 [![Test Status](https://img.shields.io/badge/tests-27%20passed-brightgreen.svg)](TESTS.md)
