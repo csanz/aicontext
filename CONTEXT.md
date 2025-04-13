@@ -1,36 +1,126 @@
-# AICTX - AI Context Generator
+# AIContext - AI Context Generator
 
 ## Project Overview
 
-AICTX is a CLI tool designed to generate context files from source code, primarily for AI-assisted development. It scans a directory, collects all relevant files, and creates a comprehensive context file that can be used with AI tools.
+AIContext is a CLI tool designed to generate context files from source code for AI-assisted development. It scans directories and files, collecting relevant code and creating comprehensive context files that can be used with AI tools.
 
 ## Core Functionality
 
-- **Context Generation**: Scans directories and creates context files with code content
-- **Snapshots**: Creates point-in-time snapshots of the codebase
-- **Templates**: Saves reusable templates for common code patterns
-- **Configuration**: Customizable settings for output format and behavior
-- **Latest Context**: Automatically maintains a `latest-context.txt` file with the most recent context
-- **Template Loading**: Provides templates like cursor rules that can be imported into projects
-- **Binary File Exclusion**: Automatically excludes binary files and build artifacts from context generation
+- **Context Generation**: Creates context files from source code with intelligent file filtering
+- **Snapshots**: Creates point-in-time snapshots of your codebase
+- **Directory Tree**: Visualizes your project structure with customizable exclusions
+- **Ignore Patterns**: Manages custom file/directory exclusions
+- **Configuration**: Provides customizable settings for output and behavior
+- **Screen Output**: Supports direct output to screen or pipes
+- **Version Control**: Seamless integration with Git through .gitignore management
 
 ## Directory Structure
 
-- **bin/**: Contains the main executable (aictx.js)
-- **lib/**: Core functionality modules
-- **.aicontext/**: Main context directory (partially version controlled)
-  - **code/**: Generated context files (ignored by git)
-  - **snapshot/**: Snapshot files (ignored by git)
-  - **config.json**: Project configuration (version controlled)
-  - **ignore.json**: Ignore patterns (version controlled)
-- **static/**: Static assets like images
-- **templates/**: Template files for rules and tests
-- **test/**: Test files
+```
+.
+├── bin/
+│   └── cx.js                 # Main CLI executable
+├── lib/                      # Core functionality modules
+│   ├── argumentParser.js     # Command-line argument parsing
+│   ├── cleanupUtils.js      # Context file cleanup utilities
+│   ├── configHandler.js     # Configuration management
+│   ├── constants.js         # System constants and defaults
+│   ├── contextGenerator.js  # Context generation engine
+│   ├── directoryTree.js     # Tree visualization
+│   ├── fileUtils.js         # File operations
+│   ├── gitignoreHandler.js  # Git integration
+│   ├── helpHandler.js       # Help system
+│   ├── ignoreCommands.js    # Ignore pattern management
+│   └── templateHandler.js   # Template processing
+├── .aicontext/              # Project context directory (git-ignored)
+│   ├── code/               # Generated context files
+│   └── snapshot/          # Snapshot files
+├── static/                  # Static assets
+├── templates/               # System templates
+└── tests/                   # Test suite
+```
+
+## Core Components
+
+### CLI Interface (bin/cx.js)
+- Main entry point for all commands
+- Processes command-line arguments
+- Routes to appropriate handlers
+- Manages command execution flow
+
+### Core Libraries
+
+#### Context Generation
+- `contextGenerator.js`: Main context generation engine
+- `directoryTree.js`: Directory structure visualization
+- `fileUtils.js`: File processing and filtering
+- `templateHandler.js`: Template management
+
+#### Configuration & Settings
+- `configHandler.js`: Configuration management
+- `constants.js`: System constants and defaults
+- `argumentParser.js`: Command-line parsing
+- `helpHandler.js`: Help documentation
+
+#### Version Control Integration
+- `gitignoreHandler.js`: Manages .gitignore integration
+  - Automatically adds `.aicontext/` to .gitignore
+  - Preserves existing patterns
+  - Creates .gitignore if needed
+
+#### Pattern Management
+- `ignoreCommands.js`: Handles ignore pattern commands
+- `cleanupUtils.js`: Context file cleanup
+- `pathUtils.js`: Path manipulation utilities
+
+## Command Structure
+
+```bash
+cx [path] [options]           # Generate context from path
+cx ignore <command>           # Manage ignore patterns
+cx -t                        # Show directory tree
+cx -o                       # Output to screen
+cx -h                      # Show help
+```
+
+## Version Control Integration
+
+### .gitignore Management
+The tool automatically manages Git integration:
+
+```bash
+# AI context files
+.aicontext/
+```
+
+All context files are stored in `.aicontext/` and automatically ignored by Git.
+
+## Configuration
+
+Project configuration is stored in `config.json` with these defaults:
+```json
+{
+  "maxFiles": 1000,
+  "maxLines": 50000,
+  "maxDepth": 10,
+  "timeout": 30000,
+  "maxFileSize": 1
+}
+```
+
+## Development Guidelines
+
+1. Follow the established module structure in `lib/`
+2. Add tests for new functionality in `tests/`
+3. Update documentation when adding features
+4. Maintain backward compatibility
+5. Use the ignore system for excluding files
+6. Test with various project sizes and structures
 
 ## Key Components
 
 ### Main Executable
-- `bin/aictx.js`: Entry point for the CLI tool, handles command-line arguments and orchestrates the context generation process
+- `bin/cx.js`: Entry point for the CLI tool, handles command-line arguments and orchestrates the context generation process
 
 ### Core Libraries
 - `lib/contextGenerator.js`: Main logic for generating context files

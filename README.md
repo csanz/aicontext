@@ -1,6 +1,6 @@
 <div align="center">
   <img src="static/logobw.png" alt="AIContext Logo" width="500" height="auto">
-  <h3>Never Let Your AI Agent Forget or Delete Your Code Again</h3>
+  <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
 ## Test Status 🧪
@@ -13,11 +13,11 @@
 
 Last tested: 04/13/2025, 09:57 America/Los_Angeles
 
-## 📋 What is AIContext?
+## What is AIContext?
 
-AIContext is a context tool that helps AI assistants better understand your code. With the cx CLI, it creates intelligent snapshots of your project. Using cx's MCP, it preserves file relationships, tracks development history, and filters out noise—ensuring AI tools grasp your codebase's structure and patterns. ✨
+A CLI tool that generates structured context from your codebase for AI tools. It scans your project, filters out build artifacts and binary files, and creates a formatted output that maintains code relationships and project structure. The tool handles file exclusions through `.gitignore` integration and custom ignore patterns.
 
-Simply run `cx` and you get:
+Run `cx` in your project:
 
 <div align="center">
   <img src="static/example.png" alt="AI Context Example" width="500" height="auto">
@@ -31,15 +31,17 @@ Simply run `cx` and you get:
 cx --mcp
 ```
 
-- Maintain an up-to-date CONTEXT.md file at the project root that:
-- Describes the current state of the application
-- Explains what each component does
-- Documents how files relate to each other
-- Includes a directory structure overview
+- Maintain an up-to-date CONTEXT.md file at the project root
+- Integrate your own AI API key (OpenAI, Gemini, Grok) for:
+  - Code review and pair programming (in development)
+  - Architecture analysis (in development)
+  - Duplicate code detection (in development)
+  - Technical debt tracking (in development)
+- Without AI key: provides basic directory tree and context snapshots
 
-(to be released soon) 
+Track development progress in [TODO.md](TODO.md)
 
-### ClI 
+### CLI 
 
 ```bash 
 cx 
@@ -50,6 +52,13 @@ cx
 - Easily exclude specific files or directories
 - Automatically copy context to clipboard (Configure)
 - Includes a visual representation of your project structure
+- With AI integration (OpenAI, Gemini, Grok) - Coming Soon:
+  - Enhanced file descriptions and purpose
+  - Deeper code relationship analysis
+  - Intelligent component documentation
+  - Architectural insights
+
+Track AI integration progress in [TODO.md](TODO.md)
 
 ## 🚀 Quick Start
 

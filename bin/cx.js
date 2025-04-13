@@ -102,7 +102,7 @@ async function main() {
     console.error(chalk.yellow('Run \'cx -h\' to learn more about valid switches and options'));
     process.exit(1);
   }
-
+  
   // If --dry-run is present, just validate and exit
   if (args.includes('--dry-run')) {
     console.log(chalk.green('Valid command'));
@@ -133,7 +133,7 @@ async function main() {
   }
 
   const config = getConfig();
-
+  
   try {
     const parser = configureParser(
       yargs(hideBin(process.argv))
