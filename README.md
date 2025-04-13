@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="static/logobw.png" alt="AIContext Logo" width="500" height="auto">
+  <img src="static/cx-logo.png" alt="AIContext Logo" width="600" height="auto">
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
@@ -22,7 +22,7 @@ A CLI tool that generates structured context from your codebase for AI tools. It
 Run `cx` in your project:
 
 <div align="center">
-  <img src="static/cx.gif" alt="AI Context Example" width="600" height="auto">
+  <img src="static/cx-example.gif" alt="AI Context Example" width="600" height="auto">
 </div>
 
 ## ✨ Key Features
