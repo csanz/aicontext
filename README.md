@@ -22,7 +22,7 @@ A CLI tool that generates structured context from your codebase for AI tools. It
 Run `cx` in your project:
 
 <div align="center">
-  <img src="static/example.png" alt="AI Context Example" width="500" height="auto">
+  <img src="static/cx.gif" alt="AI Context Example" width="600" height="auto">
 </div>
 
 ## ✨ Key Features
