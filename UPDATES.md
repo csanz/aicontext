@@ -2,6 +2,92 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.3.0 (April 2024)
+
+### Directory Structure Changes
+- **Changed**: Standardized directory structure to use `.aicontext/` instead of `.aictx/`
+- **Added**: New `.aicontext/` subdirectories for better organization:
+  - `.aicontext/code/`: Contains generated code context files
+  - `.aicontext/snapshot/`: Stores snapshot-based context files
+  - `.aicontext/config.json`: Project configuration (version controlled)
+  - `.aicontext/ignore.json`: Ignore patterns (version controlled)
+- **Removed**: Legacy `.aictx/` directory support
+- **Enhanced**: Automatic `.gitignore` management:
+  - Selectively ignores only context-related directories
+  - Preserves configuration and ignore files for version control
+  - Automatically adds/updates patterns in existing .gitignore files
+  - Creates new .gitignore if none exists
+  ```bash
+  # AI context files (excluding config and ignore files)
+  .aicontext/code/
+  .aicontext/snapshot/
+  ```
+
+### Command Structure and Testing
+- **Changed**: Migrated ignore commands to subcommand format:
+  - `ignore add` replaces `--ignore add`
+  - `ignore show` replaces `--ignore show`
+  - `ignore clear` replaces `--ignore clear`
+  - `ignore test` replaces `--ignore test`
+  Examples:
+  ```bash
+  cx ignore add "*.log"        # Add new ignore pattern
+  cx ignore show              # List current patterns
+  cx ignore test             # Preview exclusions
+  ```
+
+- **Removed**: Legacy ignore command formats (`-i`, `--show-ignore`)
+- **Improved**: Tree command output formatting and indentation
+- **Added**: Support for processing multiple directories in a single command
+  Examples:
+  ```bash
+  cx ./lib ./src              # Process multiple directories
+  cx ./lib ./tests -t        # Show tree for multiple paths
+  cx ./src ./bin -o         # Output multiple dirs to screen
+  ```
+
+- **Enhanced**: Mixed file and directory input handling
+  Examples:
+  ```bash
+  cx ./lib ./src/main.js     # Mix directories and files
+  cx ./config.js ./lib -t    # Tree view of file and directory
+  ```
+
+- **Added**: New `-o` switch for direct screen output:
+  Examples:
+  ```bash
+  cx ./lib -o                # Output directly to screen
+  cx ./lib -o | head -n 20   # Show first 20 lines
+  cx ./src -o | grep "class" # Filter for class definitions
+  cx -o > context.txt       # Redirect to custom file
+  ```
+
+- **Fixed**: Error handling for invalid switches and paths
+  Examples:
+  ```bash
+  cx --invalid-flag         # Now shows proper error message
+  cx ./nonexistent/path    # Clear path validation error
+  ```
+
+- **Updated**: Help messages to reflect new command structure
+  ```bash
+  cx -h                    # Updated basic help
+  cx -h --more            # Enhanced detailed help
+  cx ignore -h            # Subcommand-specific help
+  ```
+
+- **Improved**: Test suite organization and coverage:
+  - Expanded from 22 to 26 comprehensive tests
+  - Added detailed verification steps for each test
+  - Improved test documentation and categorization
+  - Added new test categories for output formatting and tree visualization
+
+### Documentation
+- **Added**: Detailed test documentation in TEST-COMMANDS.md
+- **Updated**: Command format examples in help messages
+- **Improved**: Error messages and user feedback
+- **Enhanced**: README.md with new command examples and options
+
 ## Version 1.2.0 (March 30, 2025)
 
 ### Local Ignore Configuration

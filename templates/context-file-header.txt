@@ -1,0 +1,11 @@
+----------------------------------
+File: {{FilePathName}}
+Lines: {{NumberOfLines}}
+Tokens: {{NumberOfTokens}}
+Extension: {{Extension}}
+Purpose: {{Purpose}}
+Last Modified: {{LastModified}}
+Size: {{FileSize}}
+----------------------------------
+
+{{FileContent}}

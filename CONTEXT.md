@@ -18,8 +18,11 @@ AICTX is a CLI tool designed to generate context files from source code, primari
 
 - **bin/**: Contains the main executable (aictx.js)
 - **lib/**: Core functionality modules
-- **context/**: Generated context files (organized in code/, snap/, and template/ subdirectories)
-  - **context/latest-context.txt**: Always contains the most recently generated context
+- **.aicontext/**: Main context directory (partially version controlled)
+  - **code/**: Generated context files (ignored by git)
+  - **snapshot/**: Snapshot files (ignored by git)
+  - **config.json**: Project configuration (version controlled)
+  - **ignore.json**: Ignore patterns (version controlled)
 - **static/**: Static assets like images
 - **templates/**: Template files for rules and tests
 - **test/**: Test files
@@ -36,7 +39,11 @@ AICTX is a CLI tool designed to generate context files from source code, primari
 - `lib/fileUtils.js`: Utilities for file operations
 - `lib/pathUtils.js`: Path manipulation utilities
 - `lib/compressionHandler.js`: Handles file compression for minimized output
-- `lib/gitignoreHandler.js`: Ensures context directory is added to .gitignore
+- `lib/gitignoreHandler.js`: Manages .gitignore patterns for context files
+  - Creates .gitignore if it doesn't exist
+  - Adds/updates patterns while preserving existing content
+  - Selectively ignores only context-related directories
+  - Ensures config and ignore files are version controlled
 - `lib/cleanupUtils.js`: Utilities for cleaning up context files
 - `lib/templateHandler.js`: Manages template creation and usage
 - `lib/templateLoader.js`: Handles loading and importing templates into user projects
@@ -60,6 +67,7 @@ The tool is invoked using the `cx` command with various options:
 - Configure settings: `cx --configure`
 - Show help: `cx -h` or `cx --help`
 - Load templates: `cx --load`
+- Screen output: `cx ./ -o` (outputs directly to screen instead of file)
 
 ## Latest Context Feature
 
@@ -104,6 +112,7 @@ AICTX automatically excludes binary files and build artifacts from context gener
 - **Build Directories**: Common build directories like `target/`, `bin/`, `obj/`, `dist/`, `build/` are excluded
 - **Rust-specific Artifacts**: Special handling for Rust build artifacts with patterns like `.rcgu.o` and `.d` files
 - **Directory Structure Filtering**: The directory tree output is post-processed to remove any remaining references to binary files or build directories
+- **.gitignore Support**: Automatically respects and follows patterns defined in your project's .gitignore file
 
 ### Custom Exclusion Patterns
 
@@ -126,6 +135,20 @@ cx --ignore clear
 ```
 
 Exclusion patterns are stored in `.aicontext/ignore.json` in the current directory, allowing for project-specific exclusions.
+
+### File Exclusion Priority
+
+Files are excluded in the following order:
+1. Binary file extensions
+2. Build directories and critical paths (node_modules, etc.)
+3. .gitignore patterns
+4. User-defined patterns
+5. Default ignored files and directories
+
+This ensures that:
+- Binary files are always excluded first for safety
+- .gitignore patterns are respected
+- User-defined patterns can override defaults when needed
 
 ### Viewing Current Exclusions
 
@@ -175,4 +198,37 @@ When making changes to the codebase:
 3. Maintain backward compatibility with existing context files
 4. Add appropriate tests for new functionality
 5. When modifying exclusion logic, ensure both the file filtering and directory structure output are updated
-6. Test with projects containing binary files (especially Rust projects with target/ directories) 
+6. Test with projects containing binary files (especially Rust projects with target/ directories)
+
+## Version Control Integration
+
+The tool is designed to work seamlessly with version control systems:
+
+### Gitignore Management
+- Automatically manages .gitignore patterns for context files
+- Ignores the entire `.aicontext/` directory:
+  ```bash
+  # AI context files
+  .aicontext/
+  ```
+- Preserves existing .gitignore content when adding patterns
+- Creates new .gitignore file if none exists
+
+### Directory Structure
+- `.aicontext/`: Contains all AI context related files and is ignored by git
+  - `code/`: Generated context files
+  - `snapshot/`: Point-in-time snapshots
+  - `config.json`: Project-specific settings
+  - `ignore.json`: Custom ignore patterns
+
+Note: Since the entire `.aicontext/` directory is ignored by git, you'll need to manually share any configuration or ignore patterns with your team if needed.
+
+### Version Controlled Files
+- `.aicontext/config.json`: Project-specific settings
+- `.aicontext/ignore.json`: Custom ignore patterns
+- These files can be shared across the team via version control
+
+### Ignored Files
+- `.aicontext/code/`: Generated context files
+- `.aicontext/snapshot/`: Point-in-time snapshots
+- These directories contain generated content that should not be committed 

@@ -5,13 +5,13 @@
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-23%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-27%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.2.0-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.3.0-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 03/30/2025, 17:33 America/Los_Angeles
+Last tested: 04/13/2025, 09:57 America/Los_Angeles
 
 ## 📋 What is AIContext?
 
@@ -82,10 +82,11 @@ Usage: cx [directory] [options]
 
 | Option | Description |
 |--------|-------------|
-| `-h, --help` | Show help information. Use `-h <category>` for category-specific help |
-| `--configure` | Start the configuration wizard to set up preferences |
-| `--show` | Display your current configuration settings |
-| `--version` | Show the current version of the tool |
+| `-h, --help` | Show help information. Use `-h --more` for detailed help |
+| `configure` | Configure settings |
+| `show` | Show current configuration |
+| `ignore` | Manage ignore patterns |
+| `-v, --version` | Show the current version of the tool |
 | `--clear` | Remove all generated context files inside the ./code folder |
 | `--clear-all` | Remove ALL context files and directories (with confirmation) |
 
@@ -94,21 +95,22 @@ Usage: cx [directory] [options]
 | Option | Description |
 |--------|-------------|
 | `-m, --message "text"` | Add a descriptive message to the context file name |
-| `-s, --snap` | Create a snapshot in the context/snap directory |
-| `-sm "message"` | Create a snapshot with a message (combined flag) |
-| `--verbose, -v` | Show detailed progress during execution (helpful for debugging) |
-| `--no-clipboard` | Skip copying content to clipboard (faster execution) |
+| `-s, --snap` | Create a snapshot in the .aicontext/snapshots directory |
+| `-o` | Output directly to screen (supports piping, bypasses file creation) |
+| `-t, --tree` | Display directory tree only |
+| `--verbose` | Show detailed progress during execution |
+| `--no-clipboard` | Skip copying content to clipboard |
 
 ### File Filtering Options
 
 | Option | Description |
 |--------|-------------|
-| `--ignore add <pattern>` | Add a glob pattern to exclude files/directories (stored in .aicontext/ignore.json) |
-| `--ignore show` | Display all current exclusion patterns |
-| `--ignore clear` | Remove all exclusion patterns |
-| `--ignore test` | Test the exclusions by showing directory tree with current exclusions |
-| `--timeout <seconds>` | Set a custom timeout for file search (default: 30 seconds) |
-| `--max-size <MB>` | Set a custom maximum file size (default: 2 MB) |
+| `ignore add <pattern>` | Add a glob pattern to exclude files/directories |
+| `ignore show` | Display all current exclusion patterns |
+| `ignore clear` | Remove all exclusion patterns |
+| `ignore test` | Test the exclusions by showing directory tree |
+| `--timeout <seconds>` | Set a custom timeout (default: 10 seconds) |
+| `--max-size <MB>` | Set a custom maximum file size (default: 1 MB) |
 
 ### Examples
 
@@ -118,32 +120,42 @@ cx                           # Generate context from current directory
 cx ./src                     # Generate context from specific directory
 cx ./src -m "auth api"       # Add a descriptive message to the context
 
+# Direct output and piping
+cx -o                        # Output directly to screen
+cx ./src -o                  # Output specific directory to screen
+cx ./src -o | grep "func"   # Pipe output to grep for filtering
+cx -o | head -n 50          # Show first 50 lines of context
+
 # Snapshots
 cx ./src -s                  # Create a snapshot
-cx ./src -sm "before refactor"  # Create snapshot with message
-cx ./src -s -m "v1.0 release"   # Same as above (separate flags)
+cx -s -m "before refactor"   # Create snapshot with message
 
-# Exclusion patterns
-cx -i "*.o"                  # Exclude all .o files
-cx -i "target/**"            # Exclude Rust target directory
-cx -i "**/*.min.js"          # Exclude all minified JS files
-cx --show-ignore             # List all exclusion patterns
+# Directory tree
+cx -t                        # Show directory tree for current directory
+cx -t ./src ./lib           # Show trees for multiple paths
+
+# Configuration and ignore patterns
+cx configure                 # Configure settings
+cx show                     # Show current configuration
+cx ignore add "*.log"       # Add ignore pattern
+cx ignore show              # Show all patterns
+cx ignore clear             # Remove all patterns
+cx ignore test              # Test current patterns
 
 # Performance options
-cx ./src --verbose           # Show detailed progress for debugging
-cx ./src --timeout 10        # Set a shorter timeout of 10 seconds for large projects
-cx ./src --max-size 20       # Set a custom maximum file size of 20 MB
-cx ./src --no-clipboard      # Skip clipboard operations for faster execution
+cx --verbose                # Show detailed progress
+cx --timeout 10            # Set a shorter timeout of 10 seconds
+cx --max-size 20           # Set a custom maximum file size of 20 MB
+cx --no-clipboard          # Skip clipboard operations
 
 # Clean up
-cx --clear                   # Remove all generated context files (except snapshots)
-cx --clear -s                # Remove all context files AND snapshots
-cx --clear-all               # Remove ALL context files and directories (with confirmation)
+cx --clear                 # Remove all generated context files (except snapshots)
+cx --clear-all            # Remove ALL context files and directories (with confirmation)
 ```
 
 ## 📋 Configuration
 
-Use `cx --configure` to set up your preferences for a customized experience:
+Use `cx configure` to set up your preferences for a customized experience:
 
 ### Available Configuration Options:
 
@@ -155,80 +167,51 @@ Use `cx --configure` to set up your preferences for a customized experience:
 
 These settings help you customize how AIContext operates to match your workflow. For example, disabling clipboard copy can speed up execution, while adjusting timeout and file size limits can help with larger projects.
 
-View your current configuration with `cx --show`.
+View your current configuration with `cx show`.
 
 Configuration is stored in `~/.aicontext/config.json` and can be manually edited if needed.
 
-## 🚫 Binary File Handling
+## 🚫 File Exclusions & Ignore Patterns
 
-AIContext automatically excludes binary files to ensure your context remains clean and focused on code:
+AIContext intelligently manages which files to include in your context:
 
-### Automatic Exclusions:
+### Default Exclusions
 
-- **Binary file types**: Executables (`.exe`, `.dll`, `.so`), object files (`.o`, `.obj`), compiled code
-- **Media files**: Images, audio, video (`.png`, `.jpg`, `.mp3`, `.mp4`, etc.)
-- **Compressed files**: Archives (`.zip`, `.tar.gz`, `.rar`, etc.)
-- **Large files**: Any file exceeding the configured size limit (default: 2MB)
-- **Build artifacts**: Common build directories and artifacts
+The following are automatically excluded:
+- Binary files (executables, object files, media files)
+- Common build directories (`node_modules`, `dist`, `.git`, etc.)
+- Files larger than the configured size limit (default: 1MB)
+- Compressed archives (`.zip`, `.tar.gz`, etc.)
 
-### Managing Exclusions:
+### Managing Custom Exclusions
+
+Use the `ignore` command to manage your exclusion patterns:
 
 ```bash
-# Add custom exclusion pattern (stored in .aicontext/ignore.json in current directory)
-cx --ignore add "target/**"    # Exclude Rust target directory
-cx --ignore add "*.min.js"     # Exclude all minified JS files
-cx --ignore add "./ecs"        # Exclude a specific directory by path
+# Add exclusion patterns
+cx ignore add "*.log"          # Exclude all log files
+cx ignore add "build/**"       # Exclude build directory
+cx ignore add "**/*.min.js"    # Exclude all minified JS files
 
-# View current exclusion patterns
-cx --ignore show
-
-# Test exclusions with directory tree view
-cx --ignore test
-
-# Clear all exclusion patterns
-cx --ignore clear
+# View and manage patterns
+cx ignore show                 # List current patterns
+cx ignore test                # Preview what will be excluded
+cx ignore clear               # Remove all patterns
 ```
 
-### Directory Exclusions:
+### Pattern Types
 
-You can exclude directories in several ways:
-1. Specify just the directory name: `cx --ignore add "build"`
-2. Add a relative path: `cx --ignore add "./ecs"`
-3. Use glob patterns: `cx --ignore add "test/**"`
+- **Simple patterns**: `*.log`, `*.tmp`
+- **Directory patterns**: `build/**`, `temp/*`
+- **Path-based**: `./src/tests/**`
+- **Multiple extensions**: `*.{jpg,png,gif}`
 
-### Local Exclusions:
+### Configuration Files
 
-For project-specific exclusions, AIContext uses a `.aicontext/ignore.json` file in each directory where you run the tool. This allows you to have different exclusion patterns for different projects or subdirectories.
+- Project-specific exclusions: `.aicontext/ignore.json`
+- Global exclusions: `~/.aicontext/config.json`
 
-```json
-{
-  "patterns": ["*.log", "temp/*", "**/*.min.js"],
-  "alwaysExcludedDirectories": ["logs", "temp-data"],
-  "alwaysExcludedFiles": ["private.config"]
-}
-```
-
-The `.aicontext` directory is created automatically in your project when you run any `--ignore` related command. You can also create it manually and edit the `ignore.json` file directly.
-
-#### How Ignore Patterns Work:
-
-- **Simple glob patterns**: `*.log` excludes all files with the .log extension
-- **Directory specific**: `logs/**` excludes everything in the logs directory
-- **Complex patterns**: `**/*.min.js` excludes all minified JavaScript files in any directory
-- **Extension groups**: `*.{jpg,png,gif}` excludes multiple file extensions
-
-This approach ensures:
-- Each project can have its own exclusion rules
-- Exclusions are relative to the current working directory
-- Teams can share exclusion patterns by committing `.aicontext/ignore.json` to version control
-
-Critical directories like `node_modules`, `dist`, and `.git` are always excluded regardless of local settings.
-
-### Configuration Locations:
-
-- **Local Exclusions**: Stored in `.aicontext/ignore.json` in the current directory
-- **User Configuration**: Stored in `~/.aicontext/config.json`
-- **Global Exclusions**: Stored in `~/.aicontext/exclude.json` (legacy, local exclusions preferred)
+Tip: Add `.aicontext` to your `.gitignore` if you don't want to share exclusion patterns with your team.
 
 ## 💡 Best Practices
 
@@ -244,31 +227,27 @@ See [UPDATES.md](UPDATES.md) for a history of changes and new features.
 
 ## 🤝 Need Help?
 
-- Basic help: `cx -h`
-
 AIContext includes several ways to get help:
 
 ### Built-in Help
 ```bash
-# General help
+# Basic help
 cx -h
 
-# Category-specific help
-cx -h snapshots      # Help with snapshot commands
-cx -h basic          # Basic command help
-cx -h ignore         # Help with exclusion patterns
+# Detailed help with all options
+cx -h --more
 ```
 
 ### Verbose Mode
 For troubleshooting issues, use verbose mode to see detailed output:
 ```bash
-cx ./src -v          # Show detailed processing information
+cx --verbose        # Show detailed processing information
 ```
 
 ### Timeout Issues
 If you're getting timeout errors with large projects:
 ```bash
-cx ./src --timeout 60  # Increase timeout to 60 seconds
+cx --timeout 60    # Increase timeout to 60 seconds
 ```
 
 ### Contributing & Issues

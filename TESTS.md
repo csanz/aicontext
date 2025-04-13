@@ -1,40 +1,44 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 3/30/2025, 5:33:31 PM
-- **Version**: 1.2.0
+- **Last Run**: 4/13/2025, 9:57:26 AM
+- **Version**: 1.3.0
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 23
-- **Passed**: 23
+- **Total Tests**: 27
+- **Passed**: 27
 - **Failed**: 0
 
 ## Passed Tests
-- ✅ Basic context generation
-- ✅ Message flag
-- ✅ Snapshot with message
-- ✅ Snapshot with separate flags
-- ✅ Clear context only
-- ✅ Clear with snapshots
-- ✅ Help system
-- ✅ Category help
-- ✅ Version flag
-- ✅ Latest context file generation
-- ✅ Clear all command
-- ✅ Ignore add pattern
-- ✅ Ignore show command
-- ✅ Ignore test command
-- ✅ Ignore clear command
-- ✅ Empty exclusions help message
-- ✅ Legacy ignore pattern
-- ✅ Legacy show ignore patterns
-- ✅ Default directory behavior
-- ✅ Output format
-- ✅ Binary file exclusion
-- ✅ Load cursor rules
-- ✅ Invalid switch detection
+- ✅ Basic context generation and content verification (Basic Operations)
+- ✅ Multiple directory inputs (Basic Operations)
+- ✅ Tree command output (Basic Operations)
+- ✅ Detailed help format and content (Command Options)
+- ✅ Help system (Command Options)
+- ✅ Message flag (Command Options)
+- ✅ Snapshot with message (Command Options)
+- ✅ Snapshot with separate flags (Command Options)
+- ✅ Version flag (Command Options)
+- ✅ Configure command (Configuration & Settings)
+- ✅ Ignore clear command (Configuration & Settings)
+- ✅ Ignore test command (Configuration & Settings)
+- ✅ Show configuration (Configuration & Settings)
+- ✅ Error handling - Invalid paths (Error Handling)
+- ✅ Invalid switch detection (Error Handling)
+- ✅ Add ignore pattern (Other)
+- ✅ Clear all command (Other)
+- ✅ Clear context only (Other)
+- ✅ Clear with snapshots (Other)
+- ✅ Empty exclusions help message (Other)
+- ✅ Gitignore patterns management (Other)
+- ✅ Latest context file functionality (Other)
+- ✅ Mixed directory and file inputs (Other)
+- ✅ No parameters behavior (Other)
+- ✅ Output command with file content verification (Other)
+- ✅ Output to screen with pipe (Other)
+- ✅ Show ignore patterns (Other)
 
 ## Failed Tests
 None

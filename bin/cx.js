@@ -6,270 +6,120 @@
  * This file serves as the entry point for the 'cx' command.
  */
 
-const { generateContext } = require('../lib/contextGenerator');
-const checkGitIgnore = require('../lib/gitignoreHandler');
-const { getConfig, showConfig, configure, CONFIG_DIR, addExclusion, showExclusions, configureIgnore, clearExclusions, testExclusions } = require('../lib/configHandler');
-const { clearContextFiles } = require('../lib/cleanupUtils');
-const { showHelp } = require('../lib/helpHandler');
-const { MAX_FILE_SIZE_MB } = require('../lib/constants');
-const clipboardy = require('clipboardy');
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-const chalk = require('chalk');
+import { generateContext } from '../lib/contextGenerator.js';
+import { checkGitIgnore } from '../lib/gitignoreHandler.js';
+import { getConfig, showConfig, configure, getExclusions } from '../lib/configHandler.js';
+import { clearContextFiles } from '../lib/cleanupUtils.js';
+import { showHelp, handleHelp, configureParser } from '../lib/helpHandler.js';
+import { handleIgnoreCommand } from '../lib/ignoreCommands.js';
+import { MAX_FILE_SIZE_MB, IGNORED_DIRS, IGNORED_FILES } from '../lib/constants.js';
+import { dirTree } from '../lib/directoryTree.js';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import fs from 'fs';
+import path from 'path';
+import chalk from 'chalk';
+import ora from 'ora';
+import readline from 'readline';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { parseArguments, findInvalidSwitch } from '../lib/argumentParser.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
- * Load cursor rules into the project
- * Copies general-rules template file to the .cursor/rules directory
+ * Format directory tree into a string with proper indentation
  */
-function loadCursorRules() {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  console.log(chalk.blue('Preparing to load cursor rules...'));
+function formatTree(node, prefix = '', isLast = true) {
+  let result = prefix + (isLast ? '└──' : '├──') + ' ' + node.name + '\n';
   
-  // Check if .cursor/rules directory exists, create if not
-  const cursorRulesDir = path.join(process.cwd(), '.cursor', 'rules');
-  if (!fs.existsSync(cursorRulesDir)) {
-    fs.mkdirSync(cursorRulesDir, { recursive: true });
-  }
-  
-  // Identify source and target files
-  const sourceFile = path.join(__dirname, '../templates/general-rules.template.md');
-  const targetFile = path.join(cursorRulesDir, 'general-rules.md');
-  
-  // Check if target file already exists
-  const fileExists = fs.existsSync(targetFile);
-  
-  // If file exists, prompt for confirmation to overwrite
-  if (fileExists) {
-    rl.question(chalk.yellow(`⚠️ The file ${targetFile} already exists. Do you want to overwrite it? (y/n): `), (answer) => {
-      if (answer.toLowerCase() === 'y') {
-        copyRuleFile(sourceFile, targetFile);
-      } else {
-        console.log(chalk.blue('Operation cancelled.'));
-      }
-      rl.close();
+  if (node.children) {
+    node.children.forEach((child, index) => {
+      const isLastChild = index === node.children.length - 1;
+      const newPrefix = prefix + (isLast ? '    ' : '│   ');
+      result += formatTree(child, newPrefix, isLastChild);
     });
-  } else {
-    // If file doesn't exist, copy directly and close readline
-    copyRuleFile(sourceFile, targetFile);
-    rl.close();
   }
-}
-
-/**
- * Helper function to copy the rule file
- */
-function copyRuleFile(source, target) {
-  if (fs.existsSync(source)) {
-    fs.copyFileSync(source, target);
-    console.log(chalk.green(`✅ Cursor rule loaded: ${target}`));
-  } else {
-    console.log(chalk.red(`❌ Template file not found: ${source}`));
-  }
-}
-
-/**
- * Check if the provided arguments contain valid switches only
- * @param {string[]} args - Command line arguments
- * @returns {boolean} - Whether all switches are valid
- */
-function hasValidSwitches(args) {
-  // List of all valid switches
-  const validSwitches = [
-    '-h', '--help', '--version',
-    '--configure', '--show', '--clear', '--clear-all',
-    '-s', '--snap', '-m', '--message', '-sm',
-    '-i', '--ignore', '--show-ignore', '--configure-ignore',
-    '-v', '--verbose', '--timeout', '--max-size', '--no-clipboard',
-    '--load-cursor-rules'
-  ];
   
-  // Check each argument that starts with a dash
-  for (const arg of args) {
-    if (arg.startsWith('-')) {
-      // Skip checking values for switches that accept parameters
-      const valueSwitches = ['--timeout', '--max-size', '-m', '--message', '-i', '--ignore'];
-      const isValueForSwitch = args.some((a, i) => 
-        i > 0 && valueSwitches.includes(args[i-1]) && a === arg
-      );
-      
-      if (!isValueForSwitch && !validSwitches.includes(arg)) {
-        console.log(chalk.red(`❌ Error: Invalid switch detected: ${arg}`));
-        return false;
+  return result;
+}
+
+/**
+ * Validate and resolve input paths
+ */
+function validatePaths(paths) {
+  const validPaths = [];
+  const errors = [];
+
+  for (const p of paths) {
+    if (!fs.existsSync(p)) {
+      errors.push(`Path does not exist: ${p}`);
+      continue;
+    }
+    validPaths.push(path.resolve(p));
+  }
+
+  return { validPaths, errors };
+}
+
+/**
+ * Handle the tree command
+ */
+async function handleTree(inputPaths) {
+  const { validPaths } = validatePaths(inputPaths);
+  if (validPaths.length === 0) {
+    console.error(chalk.red('Error: No valid paths provided'));
+    process.exit(1);
+  }
+
+  console.log('\nDirectory Tree:\n');
+  for (const path of validPaths) {
+    const stats = fs.statSync(path);
+    if (stats.isFile()) {
+      // For individual files, just print them directly
+      console.log(`${path}`);
+    } else {
+      // For directories, use dirTree
+      const tree = dirTree(path, 10);
+      if (tree) {
+        console.log(tree);
       }
     }
   }
-  
-  return true;
+  process.exit(0);
 }
 
-/**
- * Main function that processes command line arguments and executes the appropriate action
- * Handles all CLI commands including context generation, snapshots, and configuration
- */
 async function main() {
+  // Handle clear commands first, before yargs processing
   const args = process.argv.slice(2);
 
-  // Check for version flag first
-  if (args.includes('--version')) {
-    const packageJson = require('../package.json');
-    console.log(packageJson.version);
+  //TODO: here you should check if the user is using a valid command before continuing
+  // Check for invalid arguments
+  const invalidArg = findInvalidSwitch(args);
+  if (invalidArg) {
+    console.error(chalk.red('Error: Invalid switch detected'));
+    console.error(chalk.yellow('Run \'cx -h\' to learn more about valid switches and options'));
+    process.exit(1);
+  }
+
+  // If --dry-run is present, just validate and exit
+  if (args.includes('--dry-run')) {
+    console.log(chalk.green('Valid command'));
     process.exit(0);
   }
 
-  // Check for invalid switches
-  if (!hasValidSwitches(args)) {
-    console.log(chalk.yellow('Use cx -h to see a list of valid switches'));
-    process.exit(1);
-  }
-  
-  // Handle --load-cursor-rules switch
-  if (args.includes('--load-cursor-rules')) {
-    loadCursorRules();
-    return;
-  }
-
-  // Handle exclusion patterns
-  const ignoreIndex = args.findIndex(arg => arg === '-i' || arg === '--ignore');
-  if (ignoreIndex !== -1) {
-    const subcommand = args[ignoreIndex + 1];
-    
-    if (!subcommand) {
-      console.log(chalk.yellow('Usage: cx --ignore <subcommand>'));
-      console.log('Available subcommands:');
-      console.log('  add <pattern>   - Add a new exclusion pattern');
-      console.log('  show            - Show current exclusion patterns');
-      console.log('  clear           - Remove all exclusion patterns');
-      console.log('  test            - Test current exclusions with directory tree');
-      return;
-    }
-    
-    switch (subcommand) {
-      case 'show':
-        showExclusions();
-        return;
-      case 'clear':
-        clearExclusions();
-        return;
-      case 'test':
-        testExclusions();
-        return;
-      case 'add':
-        const pattern = args[ignoreIndex + 2];
-        if (!pattern) {
-          console.log(chalk.yellow('Usage: cx --ignore add <pattern>'));
-          console.log('Examples:');
-          console.log('  cx --ignore add "*.log"');
-          console.log('  cx --ignore add "build"');
-          console.log('  cx --ignore add "./ecs"');
-          return;
-        }
-        addExclusion(pattern);
-        return;
-      default:
-        // For backward compatibility, treat the subcommand as a pattern
-        addExclusion(subcommand);
-        return;
-    }
-  }
-
-  // Legacy: Show exclusion patterns 
-  if (args.includes('--show-ignore')) {
-    showExclusions();
-    return;
-  }
-
-  // Legacy: Configure ignore patterns
-  if (args.includes('--configure-ignore')) {
-    configureIgnore();
-    return;
-  }
-
-  // Handle help commands
-  if (args.includes('--help') || args.includes('-h')) {
-    const helpIndex = args.indexOf('--help') !== -1 
-      ? args.indexOf('--help') 
-      : args.indexOf('-h');
-    
-    const category = args[helpIndex + 1];
-    
-    if (!category) {
-      console.log(`
-Usage: cx [directory] [options]
-
-Quick Help:
-  cx -h <category>     Show help for specific category
-
-Options:
-  -h, --help           Show help information
-  --version            Show current version
-  --configure          Set up configuration
-  --show               Show current configuration
-  --load-cursor-rules  Load and import cursor rules
-  --clear              Remove all generated context files insid ./code folder
-  -s, --snap           Create a snapshot in context/snap
-  -m "message"         Add a message to the context file
-  -sm "message"        Create a snapshot with a message (combined flag)
-  --ignore <subcommand> Manage ignore patterns:
-      --ignore add <pattern>  Add pattern to exclude files/directories
-      --ignore show           Display current exclusion patterns
-      --ignore clear          Remove all exclusion patterns
-      --ignore test           Show directory tree with current exclusions
-  -v, --verbose        Show detailed progress during execution (helpful for debugging)
-  --timeout <seconds>  Set a custom timeout for file search (default: 30 seconds)
-  --max-size <MB>      Set a custom maximum file size (default: ${MAX_FILE_SIZE_MB} MB)
-  --no-clipboard       Skip copying content to clipboard (faster execution)
-
-Examples:
-    cx ./ -m "hello world"  # Will generate context files and add "hello-world" to the name
-    cx --ignore add "./ecs"  # Exclude the ecs directory from current working directory
-    cx --ignore add "*.log"  # Exclude all log files from current working directory
-    cx --ignore show        # Display current exclusion patterns
-    cx --ignore test        # Test exclusions by showing directory tree
-    cx ./ -sm "before refactor"  # Create a snapshot with a message
-    cx --clear-all          # Remove all context files and directories
-    cx ./ --verbose         # Show detailed progress for debugging
-    cx ./ --timeout 10      # Set a shorter timeout of 10 seconds for large projects
-    cx ./ --max-size 20     # Set a custom maximum file size of 20 MB
-    cx ./ --no-clipboard    # Skip clipboard operations for faster execution
-      `);
-    } else {
-      showHelp(category);
-    }
-    return;
-  }
-
-  // Show the current configuration
-  if (args.includes('--show')) {
-    showConfig();
-    return;
-  }
-
-  // Handle configuration setup
-  if (args.includes('--configure')) {
-    configure();
-    return;
-  }
-
-  // Handle clear command
   if (args.includes('--clear')) {
-    // Check for snapshot flag
     const includeSnapshots = args.includes('-s') || args.includes('--snap');
     clearContextFiles({ includeSnapshots });
-    return;
+    process.exit(0);
   }
 
-  // Handle clear-all command
   if (args.includes('--clear-all')) {
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
-
     rl.question('⚠️ This will remove ALL context directory files. Are you sure? (y/n): ', (answer) => {
       rl.close();
       if (answer.toLowerCase() === 'y') {
@@ -277,113 +127,91 @@ Examples:
       } else {
         console.log('Operation cancelled.');
       }
+      process.exit(0);
     });
     return;
   }
 
-  // Default directory is current directory if none provided
-  let dir = './';
-  let message = '';
-  let messageIndex = -1;
-  
-  // Check for verbose flag
-  const isVerbose = args.includes('--verbose') || args.includes('-v');
-  
-  // Get configuration
   const config = getConfig();
-  
-  // Check for timeout flag (in seconds)
-  let timeoutSec = config.defaultTimeoutSec || 30; // Use config value with fallback
-  const timeoutIndex = args.findIndex(arg => arg === '--timeout');
-  if (timeoutIndex !== -1 && args[timeoutIndex + 1]) {
-    const value = parseInt(args[timeoutIndex + 1], 10);
-    if (!isNaN(value) && value > 0) {
-      timeoutSec = value;
-    }
-  }
-  
-  // Check for max file size flag (in MB)
-  let maxFileSizeMb = config.defaultMaxFileSizeMb || MAX_FILE_SIZE_MB; // Use config value with fallback
-  const maxSizeIndex = args.findIndex(arg => arg === '--max-size');
-  if (maxSizeIndex !== -1 && args[maxSizeIndex + 1]) {
-    const value = parseInt(args[maxSizeIndex + 1], 10);
-    if (!isNaN(value) && value > 0) {
-      maxFileSizeMb = value;
-    }
-  }
-
-  // Check for non-flag arguments which would be the directory
-  const nonFlagArgs = args.filter((arg, index) => {
-    // Handle message flags (-m, --message, -sm)
-    if (arg === '-m' || arg === '--message' || arg === '-sm') {
-      messageIndex = index;
-      return false;
-    }
-    // Skip the --timeout argument and its value
-    if (arg === '--timeout' && index === timeoutIndex) {
-      return false;
-    }
-    if (index === timeoutIndex + 1 && timeoutIndex !== -1) {
-      return false;
-    }
-    // Skip the --max-size argument and its value
-    if (arg === '--max-size' && index === maxSizeIndex) {
-      return false;
-    }
-    if (index === maxSizeIndex + 1 && maxSizeIndex !== -1) {
-      return false;
-    }
-    return !arg.startsWith('-');
-  });
-  
-  if (nonFlagArgs.length > 0) {
-    dir = nonFlagArgs[0];
-  }
-  
-  // Check for message flag
-  if (messageIndex !== -1 && args[messageIndex + 1]) {
-    message = args[messageIndex + 1];
-  }
-
-  // Determine if we're creating a snapshot
-  const isSnapshot = args.includes('-s') || args.includes('--snap') || args.includes('-sm');
-
-  // Add a new option for disabling clipboard
-  const skipClipboard = args.includes('--no-clipboard');
 
   try {
-    // Generate context with the new API
-    const outputFile = await generateContext({
-      cwd: dir,
-      snapshot: isSnapshot,
-      message: message,
-      verbose: isVerbose,
-      timeoutMs: timeoutSec * 1000, // Convert seconds to milliseconds
-      maxFileSizeMb: maxFileSizeMb, // Use the custom max file size
-      skipClipboard: skipClipboard, // Added new option
-      // Pass additional config from the config file
-      ignorePaths: config.ignorePaths,
-      ignorePatterns: config.ignorePatterns,
-      includePatterns: config.includePatterns,
-      maxFiles: config.maxFiles,
-      maxLines: config.maxLinesPerFile,
-      maxDepth: config.maxDepth
-    });
+    const parser = configureParser(
+      yargs(hideBin(process.argv))
+        .scriptName('cx')
+        .version(false)
+        .usage('Usage: $0 <command> [options]')
+        .command('ignore <command> [pattern]', 'Manage ignore patterns', (yargs) => {
+          yargs
+            .positional('command', {
+              describe: 'Command to execute (add, show, clear, test)',
+              type: 'string',
+              choices: ['add', 'show', 'clear', 'test']
+            })
+            .positional('pattern', {
+              describe: 'Pattern to ignore (for add command)',
+              type: 'string'
+            });
+        }), 
+      { configure, showConfig, handleIgnoreCommand }
+    );
 
-    // Add explicit process exit to avoid hanging
-    // This is necessary because some of the dependencies (possibly encoder or minimatch)
-    // may have pending handles or timers that prevent Node from exiting cleanly
-    // The process.exit() ensures immediate termination without waiting for event loop to drain
-    process.exit(0);
+    const argv = await parser.parse();
 
+    // Handle help
+    if (handleHelp(argv)) {
+      return;
+    }
+
+    // Handle version flag
+    if (argv.version || argv.v) {
+      const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+      console.log(packageJson.version);
+      process.exit(0);
+    }
+
+    // Get input paths (either from positional args or current directory)
+    let inputPaths = argv._.length > 0 ? argv._ : ['.'];
+    
+    // Filter out any args that are actually commands or options
+    inputPaths = inputPaths.filter(arg => !arg.startsWith('-') && !['ignore', 'configure', 'show', 'clear', 'clear-all'].includes(arg));
+    
+    // If no valid paths remain, use current directory
+    if (inputPaths.length === 0) {
+      inputPaths = ['.'];
+    }
+
+    // Handle tree command
+    if (argv.tree || argv.t) {
+      await handleTree(inputPaths);
+      return;
+    }
+
+    // Generate context
+    try {
+      // Check and update .gitignore before generating context
+      await checkGitIgnore();
+
+      await generateContext({
+        inputPaths,
+        snapshot: argv.s || argv.snap,
+        message: argv.m || argv.message || '',
+        verbose: argv.v || argv.verbose,
+        timeoutMs: (argv.timeout || 30) * 1000,
+        maxFileSizeMb: argv['max-size'],
+        skipClipboard: argv['no-clipboard'],
+        screenOutput: argv.o
+      });
+    } catch (error) {
+      console.error(chalk.red(`Error: ${error.message}`));
+      process.exit(1);
+    }
   } catch (error) {
-    console.error(chalk.red(`❌ Error generating context: ${error.message}`));
+    console.error(chalk.red(`Error: ${error.message}`));
     process.exit(1);
   }
 }
 
-// Properly handle the async main function
 main().catch(error => {
-  console.error(chalk.red(`❌ Error: ${error.message}`));
+  console.error(chalk.red('Fatal error:'), error);
   process.exit(1);
 });

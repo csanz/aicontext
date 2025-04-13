@@ -1,13 +1,14 @@
 {
   "name": "aicontextjs",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "CLI tool to generate code context files",
   "main": "bin/cx.js",
+  "type": "module",
   "bin": {
     "cx": "./bin/cx.js"
   },
   "scripts": {
-    "test": "node test/test-commands.js"
+    "test": "node tests/test-commands.js"
   },
   "keywords": [
     "cli",
@@ -33,13 +34,16 @@
   "homepage": "https://github.com/csanz/aictx#readme",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "clipboardy": "^2.3.0",
+    "chalk": "^5.3.0",
+    "clipboardy": "^4.0.0",
+    "columnify": "^1.6.0",
+    "directory-tree": "^3.5.2",
     "gpt-3-encoder": "^1.1.4",
-    "minimatch": "^5.1.6",
-    "ora": "^5.4.1"
+    "minimatch": "^9.0.5",
+    "ora": "^8.0.1",
+    "yargs": "^17.7.2"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   }
 }

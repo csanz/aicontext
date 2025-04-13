@@ -1,5 +1,10 @@
 {
-  "version": "1.1.0",
+  "name": "aicontext",
+  "version": "1.0.0",
+  "snapshots": ".aicontext/snapshots",
+  "templates": "templates",
+  "code": ".aicontext/code",
+  "ignore": [],
   "contextDirectories": {
     "main": "context",
     "snapshots": "context/snap",
