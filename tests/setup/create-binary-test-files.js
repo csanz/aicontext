@@ -6,9 +6,14 @@
  * that our file exclusion logic correctly excludes binary files.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { BINARY_EXTENSIONS } = require('../lib/constants');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { BINARY_EXTENSIONS } from '../../lib/constants.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Create test directory
 const testDir = path.join(__dirname, 'binary-test-files');

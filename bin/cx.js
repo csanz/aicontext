@@ -13,7 +13,7 @@ import { clearContextFiles } from '../lib/cleanupUtils.js';
 import { showHelp, handleHelp, configureParser } from '../lib/helpHandler.js';
 import { handleIgnoreCommand } from '../lib/ignoreCommands.js';
 import { MAX_FILE_SIZE_MB, IGNORED_DIRS, IGNORED_FILES } from '../lib/constants.js';
-import { dirTree } from '../lib/directoryTree.js';
+import { dirTree, setVerbose } from '../lib/directoryTree.js';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import fs from 'fs';
@@ -66,12 +66,15 @@ function validatePaths(paths) {
 /**
  * Handle the tree command
  */
-async function handleTree(inputPaths) {
+async function handleTree(inputPaths, argv) {
   const { validPaths } = validatePaths(inputPaths);
   if (validPaths.length === 0) {
     console.error(chalk.red('Error: No valid paths provided'));
     process.exit(1);
   }
+
+  // Enable verbose logging only if --verbose flag is passed
+  setVerbose(argv.verbose || false);
 
   console.log('\nDirectory Tree:\n');
   for (const path of validPaths) {
@@ -80,8 +83,9 @@ async function handleTree(inputPaths) {
       // For individual files, just print them directly
       console.log(`${path}`);
     } else {
-      // For directories, use dirTree
-      const tree = dirTree(path, 10);
+      // For directories, use dirTree with absolute path
+      const absolutePath = fs.realpathSync(path);
+      const tree = dirTree(absolutePath, 10);
       if (tree) {
         console.log(tree);
       }
@@ -157,18 +161,6 @@ async function main() {
 
     const argv = await parser.parse();
 
-    // Handle help
-    if (handleHelp(argv)) {
-      return;
-    }
-
-    // Handle version flag
-    if (argv.version || argv.v) {
-      const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
-      console.log(packageJson.version);
-      process.exit(0);
-    }
-
     // Get input paths (either from positional args or current directory)
     let inputPaths = argv._.length > 0 ? argv._ : ['.'];
     
@@ -182,8 +174,20 @@ async function main() {
 
     // Handle tree command
     if (argv.tree || argv.t) {
-      await handleTree(inputPaths);
+      await handleTree(inputPaths, argv);
       return;
+    }
+
+    // Handle help
+    if (handleHelp(argv)) {
+      return;
+    }
+
+    // Handle version flag
+    if (argv.version || argv.v) {
+      const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+      console.log(packageJson.version);
+      process.exit(0);
     }
 
     // Generate context
