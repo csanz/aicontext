@@ -32,7 +32,8 @@ const CLI_COMMAND = 'node ./bin/cx.js';
 const MOCK_TESTS = false; // Disable mocks
 const BINARY_TEST_DIR = path.join(TEST_DIR, 'binary-test');
 const IGNORE_TEST_DIR = path.join(TEST_DIR, 'ignore-test');
-const TOTAL_TESTS = 27;
+const TREE_TEST_DIR = path.join(TEST_DIR, 'tree-test');
+const TOTAL_TESTS = 29;
 
 // Function to update TESTS.md with results
 async function updateTestsFile(results) {
@@ -1049,8 +1050,74 @@ async function runTests() {
             });
         }
 
-        // Test 27/27 - Verify gitignore patterns
-        console.log(`\nTest ${TOTAL_TESTS}/${TOTAL_TESTS} - Verify .gitignore patterns are correctly managed`);
+        // Test 27: Binary and media file exclusions
+        try {
+            console.log(`📋 Running Test 27/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${BINARY_TEST_DIR}`)}`);
+            
+            // Create binary test files using the setup script
+            const createBinaryTestFiles = path.join(__dirname, 'setup', 'create-binary-test-files.js');
+            execSync(`node ${createBinaryTestFiles}`, { stdio: 'inherit' });
+            
+            // Get the path to the generated test files
+            const binaryTestFilesDir = path.join(__dirname, 'setup', 'binary-test-files');
+            
+            // Run the command with tree option to see what files are included
+            const treeOutput = runCommand(`${binaryTestFilesDir} -t`);
+            console.log('Tree output:', treeOutput);
+            
+            // Run the command for context generation
+            const output = runCommand(`${binaryTestFilesDir} -o`);
+            console.log('Context output:', output);
+            
+            // Get the tree output section
+            const lines = treeOutput.split('\n');
+            const treeStartIndex = lines.findIndex(line => line.includes('binary-test-files/'));
+            const treeEndIndex = treeStartIndex + lines.slice(treeStartIndex).findIndex(line => line.trim() === '');
+            const actualTreeOutput = lines.slice(treeStartIndex, treeEndIndex).join('\n');
+            
+            // Verify exclusions in tree output
+            const treeLines = actualTreeOutput.split('\n');
+            const fileLines = treeLines.filter(line => !line.endsWith('/'));
+            
+            // Check that all binary files are excluded
+            BINARY_EXTENSIONS.forEach(ext => {
+                const fileName = `test-file${ext}`;
+                assert(!fileLines.some(line => line.includes(fileName)), 
+                    `Tree should exclude ${ext} files (${fileName})`);
+            });
+            
+            // Verify inclusions in tree output
+            const textExtensions = ['.js', '.txt', '.md', '.html', '.css'];
+            textExtensions.forEach(ext => {
+                const fileName = `sample-text-file${ext}`;
+                assert(fileLines.some(line => line.includes(fileName)), 
+                    `Tree should show ${ext} files (${fileName})`);
+            });
+            
+            // Verify inclusions in context output
+            textExtensions.forEach(ext => {
+                const expectedContent = `This is a sample text file with extension ${ext}`;
+                assert(output.includes(expectedContent), 
+                    `Should include content of ${ext} file`);
+            });
+            
+            // Clean up
+            fs.rmSync(binaryTestFilesDir, { recursive: true, force: true });
+            
+            results.push({
+                name: 'Binary and media file exclusions',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Binary and media file exclusions',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 28: Verify gitignore patterns
+        console.log(`📋 Running Test 28/${TOTAL_TESTS}: ${chalk.blue('Verify .gitignore patterns')}`);
         try {
             // Create a temporary .gitignore for testing
             const tempGitignorePath = path.join(process.cwd(), '.gitignore.test');
@@ -1129,6 +1196,103 @@ async function runTests() {
         } catch (error) {
             results.push({
                 name: 'Gitignore patterns management',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // Test 29: Complex directory tree with nested directories and shader files
+        try {
+            console.log(`📋 Running Test 29/${TOTAL_TESTS}: ${chalk.blue('Complex directory tree display')}`);
+            
+            // Create a complex directory structure
+            const treeTestDir = path.join(TEST_DIR, 'tree-test');
+            fs.mkdirSync(treeTestDir, { recursive: true });
+
+            // Create the directory structure
+            const structure = {
+                'src': {
+                    'experience': {
+                        'utils': {
+                            'Debug.ts': 'export class Debug {}',
+                            'Timer.ts': 'export class Timer {}'
+                        },
+                        'world': {
+                            'sea': {
+                                'cnoise.glsl': 'float cnoise(vec3 P) { return 0.0; }',
+                                'fragment.glsl': 'void main() {}',
+                                'vertex.glsl': 'void main() {}',
+                                'Sea.ts': 'export class Sea {}'
+                            },
+                            'World.ts': 'export class World {}'
+                        },
+                        'Experience.ts': 'export class Experience {}'
+                    },
+                    'main.ts': 'console.log("main")'
+                }
+            };
+
+            // Helper function to create directory structure
+            function createDirStructure(baseDir, struct) {
+                for (const [name, content] of Object.entries(struct)) {
+                    const fullPath = path.join(baseDir, name);
+                    if (typeof content === 'object') {
+                        fs.mkdirSync(fullPath, { recursive: true });
+                        createDirStructure(fullPath, content);
+                    } else {
+                        fs.writeFileSync(fullPath, content);
+                    }
+                }
+            }
+
+            createDirStructure(treeTestDir, structure);
+
+            // Run the tree command
+            const output = runCommand(`${treeTestDir} -t`);
+            
+            // Verify tree structure
+            assert(output.includes('Directory Tree:'), 'Should show tree header');
+            assert(output.includes('src/'), 'Should show root src directory');
+            assert(output.includes('experience/'), 'Should show experience directory');
+            assert(output.includes('utils/'), 'Should show utils directory');
+            assert(output.includes('world/'), 'Should show world directory');
+            assert(output.includes('sea/'), 'Should show sea directory');
+            
+            // Verify file listings
+            assert(output.includes('Debug.ts'), 'Should show Debug.ts');
+            assert(output.includes('Timer.ts'), 'Should show Timer.ts');
+            assert(output.includes('cnoise.glsl'), 'Should show cnoise.glsl');
+            assert(output.includes('fragment.glsl'), 'Should show fragment.glsl');
+            assert(output.includes('vertex.glsl'), 'Should show vertex.glsl');
+            assert(output.includes('Sea.ts'), 'Should show Sea.ts');
+            assert(output.includes('World.ts'), 'Should show World.ts');
+            
+            // Verify indentation and tree characters
+            const lines = output.split('\n');
+            const indentedLines = lines.filter(line => 
+                line.includes('├──') || 
+                line.includes('└──') || 
+                line.includes('│   ')
+            );
+            
+            // Check proper nesting levels
+            const seaDir = indentedLines.find(line => line.includes('sea/'));
+            assert(seaDir && seaDir.includes('│   │   '), 'sea/ directory should be properly nested');
+            
+            // Check shader files indentation
+            const shaderFile = indentedLines.find(line => line.includes('.glsl'));
+            assert(shaderFile && shaderFile.includes('│   │   │   '), 'shader files should be properly nested');
+
+            // Clean up
+            fs.rmSync(treeTestDir, { recursive: true, force: true });
+            
+            results.push({
+                name: 'Complex directory tree display',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Complex directory tree display',
                 status: 'failed',
                 error: error.message
             });

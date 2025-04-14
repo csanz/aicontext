@@ -2,6 +2,33 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.3.5 (April 2024)
+
+### Bug Fixes
+- **Fixed**: Verbose logging in tree command
+  - Debug output now only shows when `--verbose` flag is passed
+  - Removed unconditional debug logging in tree generation
+- **Fixed**: Directory tree generation issues
+  - Fixed cases where directory tree output would fail to generate
+  - Improved path handling and validation in tree command
+  - Enhanced error handling for edge cases
+
+### Testing Improvements
+- **Enhanced**: Binary file exclusion testing
+  - Added comprehensive test coverage for all binary extensions
+  - Created dedicated binary test files directory
+  - Added automated test file generation for all supported formats
+  - Improved test verification for both tree output and context generation
+  - Added validation for text file inclusion and binary file exclusion
+
+## Version 1.3.4 (April 2024)
+
+### Bug Fixes
+- **Fixed**: Binary file handling in directory tree output
+  - Added BINARY_EXTENSIONS check to tree generation
+  - Properly excludes binary files from tree view
+  - Improved file extension detection
+
 ## Version 1.3.2 (April 2024)
 
 ### Bug Fixes
@@ -9,6 +36,17 @@ This file contains a history of important updates and changes to the AIContext t
   - Added BINARY_EXTENSIONS check to tree generation
   - Properly excludes binary files from tree view
   - Improved file extension detection
+- **Fixed**: Verbose logging in tree command
+  - Debug output now only shows when `--verbose` flag is passed
+  - Removed unconditional debug logging in tree generation
+
+### Testing Improvements
+- **Enhanced**: Binary file exclusion testing
+  - Added comprehensive test coverage for all binary extensions
+  - Created dedicated binary test files directory
+  - Added automated test file generation for all supported formats
+  - Improved test verification for both tree output and context generation
+  - Added validation for text file inclusion and binary file exclusion
 
 ## Version 1.3.0 (April 2024)
 

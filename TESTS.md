@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 4/13/2025, 9:57:26 AM
-- **Version**: 1.3.0
+- **Last Run**: 4/13/2025, 10:53:37 PM
+- **Version**: 1.3.4
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 27
-- **Passed**: 27
+- **Total Tests**: 29
+- **Passed**: 29
 - **Failed**: 0
 
 ## Passed Tests
@@ -27,7 +27,9 @@
 - ✅ Show configuration (Configuration & Settings)
 - ✅ Error handling - Invalid paths (Error Handling)
 - ✅ Invalid switch detection (Error Handling)
+- ✅ Complex directory tree display (File Management)
 - ✅ Add ignore pattern (Other)
+- ✅ Binary and media file exclusions (Other)
 - ✅ Clear all command (Other)
 - ✅ Clear context only (Other)
 - ✅ Clear with snapshots (Other)
