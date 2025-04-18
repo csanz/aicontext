@@ -31,6 +31,11 @@ sampleTextExtensions.forEach(ext => {
   console.log(`Created sample text file: ${path.basename(filePath)}`);
 });
 
+// Create a test log file
+const logFilePath = path.join(testDir, 'test.log');
+fs.writeFileSync(logFilePath, 'This is a log file that should be excluded.\n2024-03-19 12:34:56 [INFO] Test log entry');
+console.log('Created test log file: test.log');
+
 // Create zero-byte files for each binary extension
 BINARY_EXTENSIONS.forEach(ext => {
   const fileName = `test-file${ext}`;

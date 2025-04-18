@@ -581,7 +581,7 @@ async function runTests() {
             
             // Clean up
             fs.unlinkSync(newTestFile);
-
+            
             results.push({
                 name: 'Latest context file functionality',
                 status: 'passed'
@@ -1085,6 +1085,10 @@ async function runTests() {
                 assert(!fileLines.some(line => line.includes(fileName)), 
                     `Tree should exclude ${ext} files (${fileName})`);
             });
+
+            // Specifically check that .log file is excluded
+            assert(!fileLines.some(line => line.includes('test.log')),
+                'Tree should exclude .log files');
             
             // Verify inclusions in tree output
             const textExtensions = ['.js', '.txt', '.md', '.html', '.css'];
@@ -1100,6 +1104,12 @@ async function runTests() {
                 assert(output.includes(expectedContent), 
                     `Should include content of ${ext} file`);
             });
+
+            // Verify .log file content is not included
+            assert(!output.includes('This is a log file that should be excluded'),
+                'Context should not include .log file content');
+            assert(!output.includes('[INFO] Test log entry'),
+                'Context should not include log file entries');
             
             // Clean up
             fs.rmSync(binaryTestFilesDir, { recursive: true, force: true });
@@ -1193,7 +1203,7 @@ async function runTests() {
                     fs.unlinkSync(tempGitignorePath);
                 }
             }
-        } catch (error) {
+            } catch (error) {
             results.push({
                 name: 'Gitignore patterns management',
                 status: 'failed',

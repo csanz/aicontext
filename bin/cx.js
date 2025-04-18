@@ -85,6 +85,9 @@ async function handleTree(inputPaths, argv) {
     } else {
       // For directories, use dirTree with absolute path
       const absolutePath = fs.realpathSync(path);
+      // Display the root directory name first
+      const rootDirName = absolutePath.split('/').pop() || absolutePath;
+      console.log(`${rootDirName}/`);
       const tree = dirTree(absolutePath, 10);
       if (tree) {
         console.log(tree);

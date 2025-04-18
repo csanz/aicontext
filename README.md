@@ -3,17 +3,17 @@
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
-📢 **Latest Update (v1.3.0)**: Directory structure standardization, improved command handling, and enhanced testing. [See all updates](UPDATES.md)
+📢 **Latest Update (v1.3.5)**: Fixed tree command functionality, improved binary file handling, and directory structure visualization. [See all updates](UPDATES.md)
 
 ## Test Status 🧪
 
 [![Test Status](https://img.shields.io/badge/tests-29%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.3.4-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.3.5-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 04/13/2025, 22:53 America/Los_Angeles
+Last tested: 04/17/2025, 22:52 America/Los_Angeles
 
 ## What is AIContext?
 
