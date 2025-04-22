@@ -121,7 +121,7 @@ async function handleTree(inputPaths, argv) {
       }
       
       // Generate the tree
-      const tree = dirTree(absolutePath, 10, isVerbose, false, null, 'ignore-aware-tree');
+      const tree = dirTree(absolutePath, 10, isVerbose, false, null, 'tree');
       if (tree) {
         // Format and print the tree starting from the root
         const formattedTree = formatTree(tree, 0, true, '');
