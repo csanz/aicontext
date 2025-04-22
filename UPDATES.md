@@ -2,6 +2,24 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.3.6 (May 2024)
+
+### Bug Fixes
+- **Fixed**: Static files visibility in tree command
+  - Media files in the static directory now properly appear in tree output
+  - Added purpose-aware filtering in ExclusionManager
+  - Fixed inconsistency between actual filesystem and tree display
+  - Improved caching mechanism to prevent cross-contamination of exclusion decisions
+
+### Testing Improvements
+- **Added**: New test script for static files handling
+  - Created comprehensive test to verify static directory files appear correctly
+  - Added validation for both tree visualization and content extraction
+  - Ensured proper distinction between file inclusion/exclusion for different purposes
+
+### Documentation
+- **Added**: Detailed documentation of the static files bug and solution
+
 ## Version 1.3.5 (April 2024)
 
 ### Bug Fixes
