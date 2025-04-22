@@ -2,7 +2,7 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
-## Version 1.3.6 (May 2024)
+## Version 1.3.7 (May 2024)
 
 ### Bug Fixes
 - **Fixed**: Static files visibility in tree command
@@ -20,7 +20,7 @@ This file contains a history of important updates and changes to the AIContext t
 ### Documentation
 - **Added**: Detailed documentation of the static files bug and solution
 
-## Version 1.3.5 (April 2024)
+## Version 1.3.6 (April 2024)
 
 ### Bug Fixes
 - **Fixed**: Verbose logging in tree command
