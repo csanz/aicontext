@@ -7,13 +7,13 @@
 
 ## Test Status 🧪
 
-[![Test Status](https://img.shields.io/badge/tests-29%20passed-brightgreen.svg)](TESTS.md)
+[![Test Status](https://img.shields.io/badge/tests-33%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.3.5-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.3.6-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 04/17/2025, 22:52 America/Los_Angeles
+Last tested: 04/22/2025, 10:21 America/Mexico_City
 
 ## What is AIContext?
 

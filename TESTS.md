@@ -1,20 +1,21 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 4/17/2025, 10:52:39 PM
-- **Version**: 1.3.5
+- **Last Run**: 4/22/2025, 10:21:40 AM
+- **Version**: 1.3.6
 - **Node Version**: v23.7.0
 - **OS**: Darwin 23.4.0
 
 ## Results
-- **Total Tests**: 29
-- **Passed**: 29
+- **Total Tests**: 33
+- **Passed**: 33
 - **Failed**: 0
 
 ## Passed Tests
 - ✅ Basic context generation and content verification (Basic Operations)
 - ✅ Multiple directory inputs (Basic Operations)
 - ✅ Tree command output (Basic Operations)
+- ✅ Tree command respects ignore patterns (Basic Operations)
 - ✅ Detailed help format and content (Command Options)
 - ✅ Help system (Command Options)
 - ✅ Message flag (Command Options)
@@ -24,6 +25,7 @@
 - ✅ Configure command (Configuration & Settings)
 - ✅ Ignore clear command (Configuration & Settings)
 - ✅ Ignore test command (Configuration & Settings)
+- ✅ Ignore test command shows correct exclusions (Configuration & Settings)
 - ✅ Show configuration (Configuration & Settings)
 - ✅ Error handling - Invalid paths (Error Handling)
 - ✅ Invalid switch detection (Error Handling)
@@ -36,6 +38,8 @@
 - ✅ Empty exclusions help message (Other)
 - ✅ Gitignore patterns management (Other)
 - ✅ Latest context file functionality (Other)
+- ✅ Markdown file exclusion (Other)
+- ✅ Media files appear in tree but not in content (Other)
 - ✅ Mixed directory and file inputs (Other)
 - ✅ No parameters behavior (Other)
 - ✅ Output command with file content verification (Other)
