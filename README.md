@@ -3,7 +3,7 @@
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
-📢 **Latest Update (v1.3.5)**: Fixed tree command functionality, improved binary file handling, and directory structure visualization. [See all updates](UPDATES.md)
+📢 **Latest Update (v1.3.8)**: Critical bugfix for missing config files. The application now gracefully handles missing configuration files instead of crashing. [See all updates](UPDATES.md)
 
 ## Test Status 🧪
 
