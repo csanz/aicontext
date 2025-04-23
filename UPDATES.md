@@ -2,6 +2,15 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.3.8 (May 2024)
+
+### Bug Fixes
+- **Fixed**: Critical bug with missing config files
+  - Application now properly handles missing configuration files
+  - Added graceful fallback to default settings when files cannot be accessed
+  - Fixed incorrect file paths in configuration migration
+  - Improved error handling in configuration functions
+
 ## Version 1.3.7 (May 2024)
 
 ### Bug Fixes
