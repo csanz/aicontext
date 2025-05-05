@@ -3,7 +3,7 @@
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
-📢 **Latest Update (v1.3.8)**: Critical bugfix for missing config files. The application now gracefully handles missing configuration files instead of crashing. [See all updates](UPDATES.md)
+📢 **Latest Update (v1.3.9)**: Fixed directory patterns with trailing slashes and improved UI styling. Directory patterns like "docs/" now properly exclude both directories and their contents. [See all updates](UPDATES.md)
 
 ## Test Status 🧪
 
@@ -13,7 +13,7 @@
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 05/04/2025, 21:38 America/Los_Angeles
+Last tested: 05/04/2025, 22:03 America/Los_Angeles
 
 ## What is AIContext?
 
