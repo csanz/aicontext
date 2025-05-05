@@ -2,6 +2,21 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.4.0 (May 2024)
+
+### Bug Fixes
+- **Fixed**: Directory patterns with trailing slashes
+  - Fixed issue where directory patterns with trailing slashes (e.g., "docs/") weren't properly excluded
+  - Enhanced path matching for different pattern formats including "docs", "./docs", "docs/", "docs/*", and "docs/**"
+  - Improved directory exclusion logic to check parent directory exclusion
+  - Added robust path normalization for cross-platform compatibility
+  
+### UI Improvements
+- **Changed**: Console output styling
+  - Updated success and completion messages to use more subtle gray coloring
+  - Standardized checkmark symbols throughout the application
+  - Improved visual consistency in terminal output
+
 ## Version 1.3.9 (May 2024)
 
 ### Bug Fixes

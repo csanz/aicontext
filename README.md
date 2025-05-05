@@ -3,13 +3,13 @@
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
-📢 **Latest Update (v1.3.9)**: Fixed directory patterns with trailing slashes and improved UI styling. Directory patterns like "docs/" now properly exclude both directories and their contents. [See all updates](UPDATES.md)
+📢 **Latest Update (v1.4.0)**: Fixed directory patterns with trailing slashes and improved UI styling. Directory patterns like "docs/" now properly exclude both directories and their contents. [See all updates](UPDATES.md)
 
 ## Test Status 🧪
 
 [![Test Status](https://img.shields.io/badge/tests-33%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.3.9-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.4.0-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
