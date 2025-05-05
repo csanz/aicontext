@@ -42,6 +42,15 @@ function setupTestEnvironment() {
   
   fs.writeFileSync(path.join(nestedDir, 'nested.js'), 'console.log("nested");');
   fs.writeFileSync(path.join(nestedDir, 'nested.md'), '# Nested Markdown');
+
+  // Create docs directory with files for testing directory pattern variations
+  const docsDir = path.join(TEST_DIR, 'docs');
+  if (!fs.existsSync(docsDir)) {
+    fs.mkdirSync(docsDir, { recursive: true });
+  }
+  
+  fs.writeFileSync(path.join(docsDir, 'doc.js'), 'console.log("doc");');
+  fs.writeFileSync(path.join(docsDir, 'doc.md'), '# Doc Markdown');
   
   console.log('Test environment setup complete.');
 }
@@ -72,6 +81,7 @@ async function runTests() {
     results.push(await testShouldExcludeDirectoryWithPurposes());
     results.push(await testMediaFileHandling());
     results.push(await testIgnoreAwareTreePurpose());
+    results.push(await testDirectoryPatternVariations());
     
     // Summary
     const passedCount = results.filter(r => r.status === 'passed').length;
@@ -290,6 +300,93 @@ async function testIgnoreAwareTreePurpose() {
            'Should exclude .md file with ignore-aware-tree purpose (config pattern)');
     assert(txtExcluded === true || txtExcluded === false, 
            'Text file exclusion for ignore-aware-tree depends on implementation');
+    
+    console.log(`${SUCCESS_MARK} ${testName}`);
+    return { status: 'passed', name: testName };
+  } catch (error) {
+    console.log(`${FAIL_MARK} ${testName}`);
+    console.error(`   Error: ${error.message}`);
+    return { status: 'failed', name: testName, error: error.message };
+  }
+}
+
+/**
+ * Test different directory pattern formats to ensure they all work correctly
+ * This properly returns a test result that can be integrated with the test runner
+ */
+async function testDirectoryPatternVariations() {
+  const testName = 'ExclusionManager handles different directory pattern formats';
+  
+  try {
+    // Create test directories and files
+    const testDir = path.join(__dirname, 'fixtures', 'dir-pattern-test');
+    const docsDir = path.join(testDir, 'docs');
+    const docsFile = path.join(docsDir, 'README.md');
+    
+    // Create test directories and files if they don't exist
+    if (!fs.existsSync(testDir)) {
+      fs.mkdirSync(testDir, { recursive: true });
+    }
+    if (!fs.existsSync(docsDir)) {
+      fs.mkdirSync(docsDir, { recursive: true });
+    }
+    if (!fs.existsSync(docsFile)) {
+      fs.writeFileSync(docsFile, '# Test README', 'utf8');
+    }
+    
+    // Test different pattern formats
+    const patternFormats = [
+      { pattern: 'docs', description: 'Directory name only (no trailing slash)' },
+      { pattern: './docs', description: 'Relative path' },
+      { pattern: 'docs/', description: 'Directory with trailing slash' },
+      { pattern: 'docs/*', description: 'Directory with wildcard' },
+      { pattern: 'docs/**', description: 'Directory with globstar' }
+    ];
+    
+    console.log('\nTesting directory pattern variations:');
+    
+    for (const { pattern, description } of patternFormats) {
+      console.log(`\nTesting pattern: "${pattern}" (${description})`);
+      
+      // Initialize a fresh exclusion manager for each test
+      const manager = new ExclusionManager(testDir, true);
+      
+      // Clear the cache to ensure fresh results
+      if (typeof manager.cache.clear === 'function') {
+        manager.cache.clear();
+      }
+      
+      // Clear existing patterns and add the test pattern
+      manager.configPatterns.clear();
+      manager.addPatterns([pattern], 'config');
+      
+      // Check if directory is excluded
+      const dirExcluded = manager.shouldExcludeDirectory(docsDir, 'tree');
+      console.log(`Directory excluded: ${dirExcluded}`);
+      
+      // Check if file inside directory is excluded
+      const fileExcluded = manager.shouldExcludeFile(docsFile, 'tree');
+      console.log(`File inside directory excluded: ${fileExcluded}`);
+      
+      // Both should be excluded for a working pattern
+      const patternWorks = dirExcluded && fileExcluded;
+      console.log(`Pattern "${pattern}" works correctly: ${patternWorks ? '✅' : '❌'}`);
+      
+      // Assert that both directory and file are excluded
+      assert(dirExcluded === true, 
+             `Directory should be excluded with pattern: ${pattern}`);
+      assert(fileExcluded === true, 
+             `File inside directory should be excluded with pattern: ${pattern}`);
+    }
+    
+    // Clean up test files
+    try {
+      fs.unlinkSync(docsFile);
+      fs.rmdirSync(docsDir);
+      fs.rmdirSync(testDir);
+    } catch (err) {
+      console.log(`Error cleaning up test files: ${err.message}`);
+    }
     
     console.log(`${SUCCESS_MARK} ${testName}`);
     return { status: 'passed', name: testName };
