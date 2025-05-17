@@ -22,7 +22,7 @@ The content is organized as follows:
 
 Objective
 -------------------
-To provide A read-only, combined view of source files for AI processing, debugging, or documentation.
+To provide a read-only, combined view of source files for AI processing, debugging, or documentation.
 
 Usage
 -------------------
