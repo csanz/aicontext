@@ -1,0 +1,32 @@
+# Development and IDE files
+.claude/
+.cursor/
+.idea/
+.vscode/
+.env*
+
+# Test files
+tests/
+test-dirs/
+*.test.js
+
+# Documentation (README is included by default)
+docs/
+CONTEXT.md
+UPDATES.md
+TODO.md
+TESTS.md
+Tech Design Ignore Feature.md
+
+# Local config
+config.json
+.aicontext/
+
+# Git
+.git/
+.gitignore
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db
