@@ -3,17 +3,17 @@
   <h3>Context Management for AI-Assisted Development</h3>
 </div>
 
-📢 **Latest Update (v1.4.0)**: Fixed directory patterns with trailing slashes and improved UI styling. Directory patterns like "docs/" now properly exclude both directories and their contents. [See all updates](UPDATES.md)
+📢 **Latest Update (v1.5.0)**: Improved ignore command UX - add patterns directly with `cx ignore "pattern"`, remove with `cx ignore rm "pattern"`. All file types (including .js/.txt) now respect ignore patterns. [See all updates](UPDATES.md)
 
 ## Test Status 🧪
 
 [![Test Status](https://img.shields.io/badge/tests-33%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.4.0-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.5.0-blue)](https://www.npmjs.com/package/aictx)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
-Last tested: 05/17/2025, 09:10 America/Los_Angeles
+Last tested: 02/03/2026, 09:40 America/Los_Angeles
 
 ## What is AIContext?
 
@@ -27,40 +27,11 @@ Run `cx` in your project:
 
 ## ✨ Key Features
 
-## MCP (IN DEVELOPMENT)
-
-```bash 
-cx --mcp
-```
-
-- Maintain an up-to-date CONTEXT.md file at the project root
-- Integrate your own AI API key (OpenAI, Gemini, Grok) for:
-  - Code review and pair programming (in development)
-  - Architecture analysis (in development)
-  - Duplicate code detection (in development)
-  - Technical debt tracking (in development)
-- Without AI key: provides basic directory tree and context snapshots
-
-Track development progress in [TODO.md](TODO.md)
-
-### CLI 
-
-```bash 
-cx 
-```
-
 - Automatically excludes binary files, build artifacts, and other non-essential files
 - Create point-in-time snapshots of your codebase
-- Easily exclude specific files or directories
-- Automatically copy context to clipboard (Configure)
+- Easily exclude specific files or directories with glob patterns
+- Automatically copy context to clipboard (configurable)
 - Includes a visual representation of your project structure
-- With AI integration (OpenAI, Gemini, Grok) - Coming Soon:
-  - Enhanced file descriptions and purpose
-  - Deeper code relationship analysis
-  - Intelligent component documentation
-  - Architectural insights
-
-Track AI integration progress in [TODO.md](TODO.md)
 
 ## 🚀 Quick Start
 
@@ -116,7 +87,8 @@ Usage: cx [directory] [options]
 
 | Option | Description |
 |--------|-------------|
-| `ignore add <pattern>` | Add a glob pattern to exclude files/directories |
+| `ignore <pattern>` | Add a glob pattern to exclude files/directories |
+| `ignore rm <pattern>` | Remove an exclusion pattern |
 | `ignore show` | Display all current exclusion patterns |
 | `ignore clear` | Remove all exclusion patterns |
 | `ignore test` | Test the exclusions by showing directory tree |
@@ -148,10 +120,10 @@ cx -t ./src ./lib           # Show trees for multiple paths
 # Configuration and ignore patterns
 cx configure                 # Configure settings
 cx show                     # Show current configuration
-cx ignore add "*.log"       # Add ignore pattern
+cx ignore "*.log"           # Add ignore pattern
+cx ignore rm "*.log"        # Remove ignore pattern
 cx ignore show              # Show all patterns
 cx ignore clear             # Remove all patterns
-cx ignore test              # Test current patterns
 
 # Performance options
 cx --verbose                # Show detailed progress
@@ -200,14 +172,17 @@ Use the `ignore` command to manage your exclusion patterns:
 
 ```bash
 # Add exclusion patterns
-cx ignore add "*.log"          # Exclude all log files
-cx ignore add "build/**"       # Exclude build directory
-cx ignore add "**/*.min.js"    # Exclude all minified JS files
+cx ignore "*.log"              # Exclude all log files
+cx ignore "build/**"           # Exclude build directory
+cx ignore "**/*.min.js"        # Exclude all minified JS files
+
+# Remove a pattern
+cx ignore rm "*.log"           # Remove the *.log pattern
 
 # View and manage patterns
 cx ignore show                 # List current patterns
-cx ignore test                # Preview what will be excluded
-cx ignore clear               # Remove all patterns
+cx ignore test                 # Preview what will be excluded
+cx ignore clear                # Remove all patterns
 ```
 
 ### Pattern Types

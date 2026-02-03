@@ -32,7 +32,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Validate and resolve input paths
+ * Validate and resolve input paths; skip non-existent, return valid absolute paths and errors.
+ * @param {string[]} paths - Input paths
+ * @returns {{ validPaths: string[], errors: string[] }}
  */
 function validatePaths(paths) {
   const validPaths = [];
@@ -136,6 +138,7 @@ async function handleTree(inputPaths, argv) {
   process.exit(0);
 }
 
+/** Turn on verbose logging in exclusionManager, directoryTree, gitignoreHandler, and textUtils. */
 function enableVerboseMode() {
   verboseOutput('Verbose mode enabled');
   setExclusionManagerVerbose(true);
@@ -201,15 +204,14 @@ async function main() {
         .scriptName('cx')
         .version(false)
         .usage('Usage: $0 <command> [options]')
-        .command('ignore <command> [pattern]', 'Manage ignore patterns', (yargs) => {
+        .command('ignore [command] [pattern]', 'Manage ignore patterns', (yargs) => {
           yargs
             .positional('command', {
-              describe: 'Command to execute (add, show, clear, test)',
-              type: 'string',
-              choices: ['add', 'show', 'clear', 'test']
+              describe: 'Command (add, rm, show, clear, test) or pattern to add',
+              type: 'string'
             })
             .positional('pattern', {
-              describe: 'Pattern to ignore (for add command)',
+              describe: 'Pattern for add/rm commands',
               type: 'string'
             });
         }), 
