@@ -1,5 +1,5 @@
 {
-  "name": "aicontext",
+  "name": "ai-context",
   "version": "1.5.0",
   "description": "CLI tool to generate code context files",
   "main": "bin/cx.js",

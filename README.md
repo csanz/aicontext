@@ -9,7 +9,7 @@
 
 [![Test Status](https://img.shields.io/badge/tests-33%20passed-brightgreen.svg)](TESTS.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.5.0-blue)](https://www.npmjs.com/package/aictx)
+[![npm](https://img.shields.io/badge/npm-v1.5.0-blue)](https://www.npmjs.com/package/ai-context)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](package.json)
 
@@ -37,11 +37,11 @@ Run `cx` in your project:
 
 Install globally
 ```bash
-npm install -g aicontextjs
+npm install -g ai-context
 ```
-or force the latest 
+or force the latest
 ```bash
-npm install -g aicontextjs@latest
+npm install -g ai-context@latest
 ```
 Generate context from current directory
 ```bash
