@@ -39,9 +39,12 @@ Install globally
 ```bash
 npm install -g ai-context
 ```
-or force the latest
+
+**Upgrading from `aicontextjs`?** If you have the old package installed:
 ```bash
-npm install -g ai-context@latest
+npm uninstall -g aicontextjs
+npm install -g ai-context
+# Or force overwrite: npm install -g ai-context --force
 ```
 Generate context from current directory
 ```bash
