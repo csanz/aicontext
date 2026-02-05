@@ -1,6 +1,6 @@
 {
   "name": "ai-context",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "CLI tool to generate code context files",
   "main": "bin/cx.js",
   "type": "module",

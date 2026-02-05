@@ -2,6 +2,50 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.6.0 (February 2026)
+
+### New Features
+
+#### Output Formats (`-f` / `--format`)
+- **Added**: Multiple output format support
+  - `cx -f text` - Plain text (default)
+  - `cx -f md` - Markdown with tables and fenced code blocks
+  - `cx -f json` - Structured JSON for programmatic use
+  - `cx -f xml` - XML with CDATA sections
+- Output files automatically use correct extensions (.txt, .md, .json, .xml)
+
+#### Incremental Mode
+- **Added**: Time-based filtering with `--since`
+  - `cx --since 2h` - Files changed in last 2 hours
+  - `cx --since 1d` - Files changed in last day
+  - `cx --since 2024-01-15` - Files changed since specific date
+- **Added**: Git-based filtering with `--git-diff`
+  - `cx --git-diff main` - Files changed vs main branch
+  - `cx --git-diff HEAD~5` - Files changed in last 5 commits
+- **Added**: Change tracking with `--changed`
+  - `cx --changed` - Only files changed since last `cx` run
+
+#### Include Patterns (Whitelist Filtering)
+- **Added**: Include pattern commands for whitelist-based filtering
+  - `cx include "*.ts"` - Only process TypeScript files
+  - `cx include "src/**"` - Only process files in src/
+  - `cx include show` - Display current include patterns
+  - `cx include rm "*.ts"` - Remove an include pattern
+  - `cx include clear` - Remove all include patterns
+- Include patterns work alongside ignore patterns for precise file selection
+
+### Documentation
+- **Added**: COMMANDS.md - Comprehensive CLI reference with all options, examples, and patterns
+- **Updated**: README.md streamlined to show core commands with link to full documentation
+
+### Testing Improvements
+- **Expanded**: Test suite from 33 to 44 comprehensive tests
+- **Added**: Tests for output formats (markdown, JSON, XML)
+- **Added**: Tests for incremental mode (--since, --git-diff, --changed)
+- **Added**: Tests for include patterns (add, show, clear, filtering)
+- **Improved**: Test documentation with JSDoc-style comments and section headers
+- **Added**: Test categories for better organization
+
 ## Version 1.4.0 (May 2024)
 
 ### Bug Fixes

@@ -1,14 +1,14 @@
 # Test Results
 
 ## Summary
-- **Last Run**: 2/3/2026, 9:40:53 AM
-- **Version**: 1.5.0
+- **Last Run**: 2/5/2026, 11:13:39 AM
+- **Version**: 1.5.1
 - **Node Version**: v23.7.0
 - **OS**: Darwin 24.6.0
 
 ## Results
-- **Total Tests**: 33
-- **Passed**: 33
+- **Total Tests**: 44
+- **Passed**: 44
 - **Failed**: 0
 
 ## Passed Tests
@@ -31,20 +31,31 @@
 - ✅ Invalid switch detection (Error Handling)
 - ✅ Complex directory tree display (File Management)
 - ✅ Add ignore pattern (Other)
+- ✅ Add include pattern (Other)
 - ✅ Binary and media file exclusions (Other)
+- ✅ Changed since last run (Other)
 - ✅ Clear all command (Other)
 - ✅ Clear context only (Other)
 - ✅ Clear with snapshots (Other)
 - ✅ Empty exclusions help message (Other)
+- ✅ Format file extensions (Other)
+- ✅ Git diff incremental mode (Other)
 - ✅ Gitignore patterns management (Other)
+- ✅ Include clear command (Other)
+- ✅ Include pattern filtering (Other)
+- ✅ JSON output format (Other)
 - ✅ Latest context file functionality (Other)
 - ✅ Markdown file exclusion (Other)
+- ✅ Markdown output format (Other)
 - ✅ Media files appear in tree but not in content (Other)
 - ✅ Mixed directory and file inputs (Other)
 - ✅ No parameters behavior (Other)
 - ✅ Output command with file content verification (Other)
 - ✅ Output to screen with pipe (Other)
 - ✅ Show ignore patterns (Other)
+- ✅ Show include patterns (Other)
+- ✅ Time-based incremental mode (Other)
+- ✅ XML output format (Other)
 
 ## Failed Tests
 None

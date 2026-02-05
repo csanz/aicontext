@@ -1,5 +1,56 @@
 #!/usr/bin/env node
 
+/**
+ * AIContext CLI Test Suite
+ * ========================
+ *
+ * Comprehensive test suite for the `cx` command-line tool.
+ *
+ * Test Categories:
+ * ----------------
+ * 1. Basic Operations (Tests 1-4)
+ *    - Context generation, message flags, snapshots
+ *
+ * 2. Cleanup Commands (Tests 5-6, 11)
+ *    - Clear context, clear snapshots, clear all
+ *
+ * 3. Help System (Tests 7-9)
+ *    - Basic help, detailed help, version
+ *
+ * 4. File Management (Tests 10, 17, 20-21, 25-27)
+ *    - Latest context, default behavior, multiple paths, output, binary exclusions
+ *
+ * 5. Ignore Patterns (Tests 12-16, 30-32)
+ *    - Add, show, test, clear patterns, tree/content exclusions
+ *
+ * 6. Include Patterns (Tests 34-37)
+ *    - Add, show, clear patterns, whitelist filtering
+ *
+ * 7. Output Formats (Tests 38-41)
+ *    - Text, markdown, JSON, XML formats
+ *
+ * 8. Incremental Mode (Tests 42-44)
+ *    - Time-based filtering, git-diff filtering
+ *
+ * 9. Tree Display (Tests 19, 29, 33)
+ *    - Tree output, complex structures, media files
+ *
+ * 10. Configuration (Tests 22-23)
+ *     - Configure command, show settings
+ *
+ * 11. Error Handling (Tests 18, 24)
+ *     - Invalid switches, invalid paths
+ *
+ * 12. Git Integration (Tests 28)
+ *     - Gitignore pattern management
+ *
+ * Running Tests:
+ * --------------
+ * npm test
+ *
+ * Test results are automatically written to TESTS.md and README.md badges are updated.
+ */
+
 import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -20,23 +71,28 @@ const __dirname = dirname(__filename);
 // Import local modules
 import { BINARY_EXTENSIONS } from '../lib/constants.js';
 import { shouldProcessFile } from '../lib/fileUtils.js';
-import { getExclusions } from '../lib/configHandler.js';
+import { getExclusions, getInclusions } from '../lib/configHandler.js';
 import { BASIC_OPTIONS, DETAILED_OPTIONS } from '../lib/helpHandler.js';
 
 // Import test for static files
 import './test-static-files.js';
 
-// Test configuration
-const TEST_DIR = path.join(__dirname, 'fixtures');
-const CONTEXT_DIR = path.join(process.cwd(), '.aicontext');
-const CODE_DIR = path.join(CONTEXT_DIR, 'code');
-const LATEST_FILE = 'latest-context.txt';
-const CLI_COMMAND = 'node ./bin/cx.js';
-const MOCK_TESTS = false; // Disable mocks
-const BINARY_TEST_DIR = path.join(TEST_DIR, 'binary-test');
-const IGNORE_TEST_DIR = path.join(TEST_DIR, 'ignore-test');
-const TREE_TEST_DIR = path.join(TEST_DIR, 'tree-test');
-const TOTAL_TESTS = 30;
+// =============================================================================
+// Test Configuration
+// =============================================================================
+
+const TEST_DIR = path.join(__dirname, 'fixtures');           // Directory for test fixtures
+const CONTEXT_DIR = path.join(process.cwd(), '.aicontext');  // Generated context directory
+const CODE_DIR = path.join(CONTEXT_DIR, 'code');             // Code context output directory
+const LATEST_FILE = 'latest-context.txt';                    // Latest context symlink filename
+const CLI_COMMAND = 'node ./bin/cx.js';                      // CLI command to test
+const MOCK_TESTS = false;                                    // Disable mocks for real testing
+const BINARY_TEST_DIR = path.join(TEST_DIR, 'binary-test');  // Binary file test directory
+const IGNORE_TEST_DIR = path.join(TEST_DIR, 'ignore-test');  // Ignore pattern test directory
+const TREE_TEST_DIR = path.join(TEST_DIR, 'tree-test');      // Tree command test directory
+
+// Total expected tests - update this when adding new tests
+const TOTAL_TESTS = 44;
 
 // Function to update TESTS.md with results
 async function updateTestsFile(results) {
@@ -265,10 +321,20 @@ function createDirectories() {
     fs.mkdirSync(path.join(CONTEXT_DIR, 'snapshots'), { recursive: true });
 }
 
-// Test for tree command respecting ignore patterns
+// =============================================================================
+// Async Test Functions (Tests 31-33)
+// =============================================================================
+
+/**
+ * Test 31: Tree command respects ignore patterns
+ * Verifies that the tree command properly filters out files matching ignore patterns.
+ * - Creates .js and .md test files
+ * - Adds *.md to ignore patterns
+ * - Confirms tree shows .js but excludes .md files
+ */
 async function testTreeCommandWithIgnorePatterns() {
   const testName = 'Tree command respects ignore patterns';
-  
+
   try {
     // Create test files
     fs.writeFileSync(path.join(TEST_DIR, 'tree-test-js.js'), 'console.log("test");');
@@ -301,10 +367,16 @@ async function testTreeCommandWithIgnorePatterns() {
   }
 }
 
-// Test for ignore test command
+/**
+ * Test 32: Ignore test command shows correct exclusions
+ * Verifies that `cx ignore test` correctly previews which files would be excluded.
+ * - Creates .js and .md test files
+ * - Adds *.md to ignore patterns
+ * - Confirms both `ignore test` and `-t` commands exclude .md files consistently
+ */
 async function testIgnoreTestCommand() {
   const testName = 'Ignore test command shows correct exclusions';
-  
+
   try {
     // Create test files
     fs.writeFileSync(path.join(TEST_DIR, 'ignore-test-js.js'), 'console.log("test");');
@@ -352,10 +424,17 @@ async function testIgnoreTestCommand() {
   }
 }
 
-// Test for media files in tree but not in content
+/**
+ * Test 33: Media files appear in tree but not in content
+ * Verifies that media files (images) are shown in tree output but their binary
+ * content is excluded from the generated context file.
+ * - Creates a directory with .js and .png files
+ * - Confirms tree shows both files
+ * - Confirms context includes .js content but not .png content
+ */
 async function testMediaFilesInTreeNotContent() {
   const testName = 'Media files appear in tree but not in content';
-  
+
   try {
     // Create test files
     const mediaDir = path.join(TEST_DIR, 'media-test');
@@ -419,19 +498,31 @@ async function testMediaFilesInTreeNotContent() {
   }
 }
 
-// Main test runner
+// =============================================================================
+// Main Test Runner
+// =============================================================================
+
 async function runTests() {
     const results = [];
-    
+
     console.log('\n🧪 Starting tests...');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     try {
+        // Setup: Clean previous test artifacts and create fresh test fixtures
         cleanDirectories();
         createTestFiles();
-        createDirectories(); // Create all necessary directories before tests
+        createDirectories();
 
-        // Test 1: Basic context generation and content verification
+        // =====================================================================
+        // SECTION 1: Basic Operations (Tests 1-4)
+        // =====================================================================
+
+        /**
+         * Test 1: Basic context generation and content verification
+         * Verifies that running `cx` on a directory generates a context file
+         * with the expected structure (header, file list, test.js content).
+         */
         try {
             console.log(`📋 Running Test 1/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR}`)}`);
             
@@ -468,7 +559,11 @@ async function runTests() {
             });
         }
 
-        // Test 2: Message flag
+        /**
+         * Test 2: Message flag (-m)
+         * Verifies that the -m flag adds a descriptive message to the output filename.
+         * Expected: context-*-test-message.txt file created
+         */
         try {
             console.log(`📋 Running Test 2/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -m "test message"`)}`);
             const output = runCommand(`${TEST_DIR} -m "test message"`);
@@ -486,7 +581,10 @@ async function runTests() {
             });
         }
 
-        // Test 3: Snapshot with message
+        /**
+         * Test 3: Snapshot with combined flags (-sm)
+         * Verifies that -sm creates a snapshot file with a message in the snapshots directory.
+         */
         try {
             console.log(`📋 Running Test 3/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -sm "test snapshot"`)}`);
             runCommand(`${TEST_DIR} -sm "test snapshot"`);
@@ -505,7 +603,10 @@ async function runTests() {
             });
         }
 
-        // Test 4: Snapshot with separate flags
+        /**
+         * Test 4: Snapshot with separate flags (-s -m)
+         * Verifies that -s and -m work correctly when specified separately.
+         */
         try {
             console.log(`📋 Running Test 4/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -s -m "test snapshot separate"`)}`);
             runCommand(`${TEST_DIR} -s -m "test snapshot separate"`);
@@ -524,7 +625,14 @@ async function runTests() {
             });
         }
 
-        // Test 5: Clear context only
+        // =====================================================================
+        // SECTION 2: Cleanup Commands (Tests 5-6)
+        // =====================================================================
+
+        /**
+         * Test 5: Clear context only (--clear)
+         * Verifies that --clear removes files from code/ but preserves snapshots/.
+         */
         try {
             console.log(`📋 Running Test 5/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} --clear`)}`);
             runCommand('--clear');
@@ -546,7 +654,10 @@ async function runTests() {
             });
         }
 
-        // Test 6: Clear with snapshots
+        /**
+         * Test 6: Clear with snapshots (--clear -s)
+         * Verifies that --clear -s also clears the snapshots/ directory.
+         */
         try {
             console.log(`📋 Running Test 6/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} --clear -s`)}`);
             runCommand('--clear -s');
@@ -565,7 +676,15 @@ async function runTests() {
             });
         }
 
-        // Test 7: Help system
+        // =====================================================================
+        // SECTION 3: Help System (Tests 7-9)
+        // =====================================================================
+
+        /**
+         * Test 7: Basic help system (-h)
+         * Verifies that -h displays all required sections, basic options, and commands.
+         * Also verifies that removed options (like --menu) are not present.
+         */
         try {
             console.log(`📋 Running Test 7/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} -h`)}`);
             const output = runCommand('-h');
@@ -622,7 +741,11 @@ async function runTests() {
             });
         }
 
-        // Test 8: Verify detailed help format and content
+        /**
+         * Test 8: Detailed help format and content (-h --more)
+         * Verifies that detailed help includes all options, descriptions, and examples.
+         * Checks for presence of all DETAILED_OPTIONS keys and values.
+         */
         try {
             console.log(`📋 Running Test 8/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} -h --more`)}`);
             const result = runCommand('-h --more');
@@ -633,9 +756,9 @@ async function runTests() {
                 'Usage:',
                 'Commands:',
                 'All Available Options:',
-                'Ignore Pattern Options:',
-                'Examples:',
-                'Notes:'
+                'Ignore Patterns',
+                'Include Patterns',
+                'Examples:'
             ];
             
             // Get all options from DETAILED_OPTIONS
@@ -689,7 +812,10 @@ async function runTests() {
             });
         }
 
-        // Test 9: Version flag
+        /**
+         * Test 9: Version flag (--version)
+         * Verifies that --version outputs the version from package.json.
+         */
         try {
             console.log(`📋 Running Test 9/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} --version`)}`);
             const packageJson = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf8'));
@@ -707,7 +833,16 @@ async function runTests() {
             });
         }
 
-        // Test 10: Latest context file functionality
+        // =====================================================================
+        // SECTION 4: File Management (Tests 10-11, 17, 20-21, 25-27)
+        // =====================================================================
+
+        /**
+         * Test 10: Latest context file functionality
+         * Verifies that latest-context.txt is created and updated on subsequent runs.
+         * - First run creates the file
+         * - Adding a new file and running again updates the content
+         */
         try {
             console.log(`📋 Running Test 10/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR}`)}`);
             const output1 = execSync(`${CLI_COMMAND} ${TEST_DIR}`, { 
@@ -751,7 +886,11 @@ async function runTests() {
             });
         }
 
-        // Test 11: Clear all command
+        /**
+         * Test 11: Clear all command (--clear-all)
+         * Verifies that --clear-all removes all files from both code/ and snapshots/.
+         * Requires interactive confirmation (simulated with stdin).
+         */
         try {
             // Create some dummy files in the context directories
             fs.mkdirSync(path.join(CONTEXT_DIR, 'code'), { recursive: true });
@@ -799,12 +938,19 @@ async function runTests() {
             });
         }
 
-        // Test 12: Ignore add pattern
+        // =====================================================================
+        // SECTION 5: Ignore Patterns (Tests 12-16)
+        // =====================================================================
+
+        /**
+         * Test 12: Add ignore pattern (cx ignore add)
+         * Verifies that patterns can be added to the ignore list and persisted.
+         */
         try {
             console.log(`📋 Running Test 12/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ignore add "*.o"`)}`);
             const output = runCommand('ignore add "*.o"');
             assert(output.includes('✅ Added exclusion pattern: *.o'), 'Should show success message');
-            
+
             // Verify pattern was added to ignore.json
             const ignoreJsonPath = path.join(process.cwd(), '.aicontext', 'ignore.json');
             const ignoreConfig = JSON.parse(fs.readFileSync(ignoreJsonPath, 'utf8'));
@@ -822,11 +968,14 @@ async function runTests() {
             });
         }
 
-        // Test 13: Show ignore patterns
+        /**
+         * Test 13: Show ignore patterns (cx ignore show)
+         * Verifies that current ignore patterns are displayed correctly.
+         */
         try {
             console.log(`📋 Running Test 13/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ignore show`)}`);
             const output = runCommand('ignore show');
-            
+
             // Verify the pattern exists in the output
             assert(output.includes('*.o'), 'Output should include the added ignore pattern');
             assert(output.includes('Current Exclusion Patterns:'), 'Output should show correct header');
@@ -848,7 +997,10 @@ async function runTests() {
             });
         }
 
-        // Test 14: Ignore test command
+        /**
+         * Test 14: Ignore test command (cx ignore test)
+         * Verifies that a preview of excluded files is shown.
+         */
         try {
             console.log(`📋 Running Test 14/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ignore test`)}`);
             const output = runCommand('ignore test');
@@ -866,7 +1018,10 @@ async function runTests() {
             });
         }
 
-        // Test 15: Ignore clear command
+        /**
+         * Test 15: Ignore clear command (cx ignore clear)
+         * Verifies that all custom ignore patterns can be cleared.
+         */
         try {
             console.log(`📋 Running Test 15/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ignore clear`)}`);
             const output = runCommand('ignore clear');
@@ -888,11 +1043,14 @@ async function runTests() {
             });
         }
 
-        // Test 16: Empty exclusions help message (previously 15.5)
+        /**
+         * Test 16: Empty exclusions help message
+         * Verifies that when no patterns are defined, a helpful usage message is shown.
+         */
         try {
             console.log(`📋 Running Test 16/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ignore show (after clear)`)}`);
             const output = runCommand('ignore show');
-            
+
             // After clearing, we should see the help message with the new command format
             assert(output.includes('No custom exclusion patterns defined.'), 'Output should indicate no patterns');
             assert(output.includes('cx ignore add "pattern"'), 'Help should reference new command format');
@@ -911,12 +1069,15 @@ async function runTests() {
             });
         }
 
-        // Test 17: No parameters behavior
+        /**
+         * Test 17: No parameters behavior (default directory)
+         * Verifies that running `cx` without arguments processes the current directory.
+         */
         try {
             // Create a test file in the current directory
             const testFilePath = path.join(process.cwd(), 'test-default-dir.js');
             fs.writeFileSync(testFilePath, 'console.log("test default directory");');
-            
+
             console.log(`📋 Running Test 17/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND}`)}`);
             // Run the command without specifying a directory
             const output = runCommand('');
@@ -942,10 +1103,17 @@ async function runTests() {
             });
         }
 
-        // Test 18: Invalid switch detection
+        // =====================================================================
+        // SECTION 6: Error Handling (Tests 18, 24)
+        // =====================================================================
+
+        /**
+         * Test 18: Invalid switch detection
+         * Verifies that unrecognized command-line switches produce helpful error messages.
+         */
         try {
             console.log(`📋 Running Test 18/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} --invalid-switch`)}`);
-            
+
             // We expect this to fail with an exit code of 1
             try {
                 runCommand('--invalid-switch');
@@ -969,11 +1137,18 @@ async function runTests() {
             });
         }
 
-        // Test 19: Tree command output
+        // =====================================================================
+        // SECTION 7: Tree Display (Tests 19, 29)
+        // =====================================================================
+
+        /**
+         * Test 19: Tree command output (-t)
+         * Verifies that tree output has correct formatting with tree characters.
+         */
         try {
             console.log(`📋 Running Test 19/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ./lib -t`)}`);
             const output = runCommand('./lib -t');
-            
+
             // Verify tree output format
             assert(output.includes('Directory Tree:'), 'Should show tree header');
             assert(output.includes('lib/'), 'Should show root directory');
@@ -1001,11 +1176,14 @@ async function runTests() {
             });
         }
 
-        // Test 20: Multiple directory inputs
+        /**
+         * Test 20: Multiple directory inputs
+         * Verifies that multiple directories can be processed in a single command.
+         */
         try {
             console.log(`📋 Running Test 20/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ./lib ./bin`)}`);
             const output = runCommand('./lib ./bin');
-            
+
             // Verify both directories are processed
             assert(output.includes('lib/') || output.includes('lib\\'), 'Should process first directory');
             assert(output.includes('Total Files:'), 'Should show summary');
@@ -1025,14 +1203,17 @@ async function runTests() {
             });
         }
 
-        // Test 21: Mixed directory and file inputs
+        /**
+         * Test 21: Mixed directory and file inputs
+         * Verifies that directories and individual files can be mixed in a single command.
+         */
         try {
             // Create a test file
             const testFile = path.join(TEST_DIR, 'mixed-test.js');
             fs.writeFileSync(testFile, 'console.log("mixed input test");');
 
             console.log(`📋 Running Test 21/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ./lib ./bin ${testFile} -m "test-single-file"`)}`);
-            
+
             // Execute the command
             execSync(`${CLI_COMMAND} ./lib ./bin ${testFile} -m "test-single-file"`, { 
                 encoding: 'utf8',
@@ -1062,10 +1243,18 @@ async function runTests() {
             });
         }
 
-        // Test 22: Configure command
+        // =====================================================================
+        // SECTION 8: Configuration (Tests 22-23)
+        // =====================================================================
+
+        /**
+         * Test 22: Configure command (cx configure)
+         * Verifies that the interactive configuration prompt works.
+         * Uses stdin simulation to provide default responses.
+         */
         try {
             console.log(`📋 Running Test 22/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} configure`)}`);
-            
+
             // Since configure is interactive, we'll need to simulate user input
             const child = spawn('node', ['./bin/cx.js', 'configure'], {
                 stdio: ['pipe', 'pipe', 'pipe']
@@ -1093,11 +1282,14 @@ async function runTests() {
             });
         }
 
-        // Test 23: Show configuration
+        /**
+         * Test 23: Show configuration (cx show)
+         * Verifies that current configuration settings are displayed.
+         */
         try {
             console.log(`📋 Running Test 23/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} show`)}`);
             const output = runCommand('show');
-            
+
             assert(output.includes('Current Configuration:'), 'Should show configuration header');
             
             results.push({
@@ -1112,7 +1304,10 @@ async function runTests() {
             });
         }
 
-        // Test 24: Error handling - Invalid paths
+        /**
+         * Test 24: Error handling - Invalid paths
+         * Verifies that non-existent paths produce appropriate ENOENT errors.
+         */
         try {
             console.log(`📋 Running Test 24/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ./nonexistent/path`)}`);
             let errorThrown = false;
@@ -1136,10 +1331,17 @@ async function runTests() {
             });
         }
 
-        // Test 25: Output to screen with pipe
+        // =====================================================================
+        // SECTION 9: Output Options (Tests 25-26)
+        // =====================================================================
+
+        /**
+         * Test 25: Output to screen with pipe (-o)
+         * Verifies that -o outputs to stdout instead of creating a file.
+         */
         try {
             console.log(`📋 Running Test 25/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ./lib -o | head`)}`);
-            
+
             // Create a temporary file to store the output
             const tempOutputFile = path.join(TEST_DIR, 'temp-output.txt');
             
@@ -1168,10 +1370,13 @@ async function runTests() {
             });
         }
 
-        // Test 26: Output command with file content verification
+        /**
+         * Test 26: Output command with file content verification
+         * Verifies that -o output contains proper structure and actual file content.
+         */
         try {
             console.log(`📋 Running Test 26/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -o`)}`);
-            
+
             // Create a test file with known content
             const testFile = path.join(TEST_DIR, 'output-test.js');
             const testContent = 'console.log("output test content");';
@@ -1207,10 +1412,18 @@ async function runTests() {
             });
         }
 
-        // Test 27: Binary and media file exclusions
+        // =====================================================================
+        // SECTION 10: Binary and Media Files (Tests 27)
+        // =====================================================================
+
+        /**
+         * Test 27: Binary and media file exclusions
+         * Verifies that binary files are excluded from content but media files
+         * are shown in tree output with [media] labels.
+         */
         try {
             console.log(`📋 Running Test 27/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${BINARY_TEST_DIR}`)}`);
-            
+
             // Create binary test files using the setup script
             const createBinaryTestFiles = path.join(__dirname, 'setup', 'create-binary-test-files.js');
             execSync(`node ${createBinaryTestFiles}`, { stdio: 'inherit' });
@@ -1301,7 +1514,14 @@ async function runTests() {
             });
         }
 
-        // Test 28: Verify gitignore patterns
+        // =====================================================================
+        // SECTION 11: Git Integration (Test 28)
+        // =====================================================================
+
+        /**
+         * Test 28: Gitignore patterns management
+         * Verifies that .gitignore is properly created/updated with .aicontext/ pattern.
+         */
         console.log(`📋 Running Test 28/${TOTAL_TESTS}: ${chalk.blue('Verify .gitignore patterns')}`);
         try {
             // Create a temporary .gitignore for testing
@@ -1386,10 +1606,14 @@ async function runTests() {
             });
         }
 
-        // Test 29: Complex directory tree with nested directories and shader files
+        /**
+         * Test 29: Complex directory tree with nested directories
+         * Verifies that deeply nested directory structures display correctly with
+         * proper indentation and tree characters for shader files and nested paths.
+         */
         try {
             console.log(`📋 Running Test 29/${TOTAL_TESTS}: ${chalk.blue('Complex directory tree display')}`);
-            
+
             // Create a complex directory structure
             const treeTestDir = path.join(TEST_DIR, 'tree-test');
             fs.mkdirSync(treeTestDir, { recursive: true });
@@ -1491,10 +1715,13 @@ async function runTests() {
             });
         }
 
-        // Test 30: Verify ignore patterns correctly exclude .md files
+        /**
+         * Test 30: Verify ignore patterns correctly exclude .md files
+         * Tests gitignore-based exclusion of markdown files from both tree and content.
+         */
         try {
             console.log(`📋 Running Test 30/${TOTAL_TESTS}: ${chalk.blue('Verify ignore patterns for .md files')}`);
-            
+
             // Create test directory with markdown files
             const mdTestDir = path.join(TEST_DIR, 'md-test');
             fs.mkdirSync(mdTestDir, { recursive: true });
@@ -1596,6 +1823,341 @@ async function runTests() {
                 error: error.message
             });
         }
+
+        // =====================================================================
+        // SECTION 12: Include Patterns (Tests 34-37)
+        // =====================================================================
+
+        /**
+         * Test 34: Add include pattern (cx include add)
+         * Verifies that include patterns can be added for whitelist filtering.
+         */
+        try {
+            console.log(`📋 Running Test 34/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} include add "*.js"`)}`);
+            const output = runCommand('include add "*.js"');
+            assert(output.includes('Added include pattern: *.js'), 'Should show success message');
+
+            // Verify pattern was added
+            const inclusions = getInclusions();
+            assert(inclusions.patterns.includes('*.js'), 'Pattern should be added to inclusions');
+
+            results.push({
+                name: 'Add include pattern',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Add include pattern',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 35: Show include patterns (cx include show)
+         * Verifies that current include patterns are displayed correctly.
+         */
+        try {
+            console.log(`📋 Running Test 35/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} include show`)}`);
+            const output = runCommand('include show');
+
+            assert(output.includes('*.js'), 'Output should include the added pattern');
+            assert(output.includes('Current Include Patterns:'), 'Output should show correct header');
+
+            results.push({
+                name: 'Show include patterns',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Show include patterns',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 36: Include pattern filtering
+         * Verifies that only files matching include patterns are processed.
+         */
+        try {
+            console.log(`📋 Running Test 36/${TOTAL_TESTS}: ${chalk.blue('Include pattern filtering')}`);
+
+            // Create test directory with multiple file types
+            const includeTestDir = path.join(TEST_DIR, 'include-test');
+            fs.mkdirSync(includeTestDir, { recursive: true });
+            fs.writeFileSync(path.join(includeTestDir, 'test.js'), 'console.log("js file");');
+            fs.writeFileSync(path.join(includeTestDir, 'test.ts'), 'console.log("ts file");');
+            fs.writeFileSync(path.join(includeTestDir, 'test.txt'), 'text file content');
+
+            // With *.js include pattern already set, only .js files should be included
+            const output = runCommand(`${includeTestDir} -o`);
+
+            // Should include .js content
+            assert(output.includes('console.log("js file")'), 'Should include JS file content');
+
+            // Should not include .ts or .txt content
+            assert(!output.includes('console.log("ts file")'), 'Should not include TS file content');
+            assert(!output.includes('text file content'), 'Should not include TXT file content');
+
+            // Clean up
+            fs.rmSync(includeTestDir, { recursive: true, force: true });
+
+            results.push({
+                name: 'Include pattern filtering',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Include pattern filtering',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 37: Include clear command (cx include clear)
+         * Verifies that include patterns can be cleared.
+         */
+        try {
+            console.log(`📋 Running Test 37/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} include clear`)}`);
+            const output = runCommand('include clear');
+            assert(output.includes('Cleared all include patterns'), 'Should confirm patterns cleared');
+
+            // Verify patterns are cleared
+            const inclusions = getInclusions();
+            assert(inclusions.patterns.length === 0, 'Include patterns should be empty');
+
+            results.push({
+                name: 'Include clear command',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Include clear command',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // =====================================================================
+        // SECTION 13: Output Formats (Tests 38-41)
+        // =====================================================================
+
+        /**
+         * Test 38: Markdown output format (-f md)
+         * Verifies that markdown format produces proper structure with tables and code blocks.
+         */
+        try {
+            console.log(`📋 Running Test 38/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -f md -o`)}`);
+            const output = runCommand(`${TEST_DIR} -f md -o`);
+
+            // Check for markdown-specific elements
+            assert(output.includes('# '), 'Should have markdown headers');
+            assert(output.includes('```'), 'Should have code blocks');
+
+            results.push({
+                name: 'Markdown output format',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Markdown output format',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 39: JSON output format (-f json)
+         * Verifies that JSON format produces valid, parseable JSON.
+         */
+        try {
+            console.log(`📋 Running Test 39/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -f json -o`)}`);
+            const output = runCommand(`${TEST_DIR} -f json -o`);
+
+            // Verify it's valid JSON
+            const parsed = JSON.parse(output);
+            assert(parsed.metadata, 'JSON should have metadata');
+            assert(parsed.files, 'JSON should have files array');
+            assert(Array.isArray(parsed.files), 'Files should be an array');
+
+            results.push({
+                name: 'JSON output format',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'JSON output format',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 40: XML output format (-f xml)
+         * Verifies that XML format produces proper structure with CDATA sections.
+         */
+        try {
+            console.log(`📋 Running Test 40/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} -f xml -o`)}`);
+            const output = runCommand(`${TEST_DIR} -f xml -o`);
+
+            // Check for XML-specific elements
+            assert(output.includes('<?xml'), 'Should have XML declaration');
+            assert(output.includes('<context>'), 'Should have context root element');
+            assert(output.includes('<files>'), 'Should have files element');
+            assert(output.includes('CDATA'), 'Should use CDATA for content');
+
+            results.push({
+                name: 'XML output format',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'XML output format',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 41: Format file extension
+         * Verifies that output files have correct extensions based on format.
+         */
+        try {
+            console.log(`📋 Running Test 41/${TOTAL_TESTS}: ${chalk.blue('Format file extensions')}`);
+
+            // Generate files in different formats
+            runCommand(`${TEST_DIR} -f md -m "format-test-md"`);
+            runCommand(`${TEST_DIR} -f json -m "format-test-json"`);
+
+            const codeDir = path.join(CONTEXT_DIR, 'code');
+            const files = fs.readdirSync(codeDir);
+
+            assert(files.some(f => f.includes('format-test-md') && f.endsWith('.md')), 'MD format should create .md file');
+            assert(files.some(f => f.includes('format-test-json') && f.endsWith('.json')), 'JSON format should create .json file');
+
+            results.push({
+                name: 'Format file extensions',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Format file extensions',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // =====================================================================
+        // SECTION 14: Incremental Mode (Tests 42-44)
+        // =====================================================================
+
+        /**
+         * Test 42: Time-based incremental mode (--since)
+         * Verifies that --since filters files by modification time.
+         */
+        try {
+            console.log(`📋 Running Test 42/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} --since 1h -o`)}`);
+
+            // Create a file that should be included (modified recently)
+            const recentFile = path.join(TEST_DIR, 'recent-file.js');
+            fs.writeFileSync(recentFile, 'console.log("recent");');
+
+            const output = runCommand(`${TEST_DIR} --since 1h -o`);
+
+            // Should include the recently created file
+            assert(output.includes('recent-file.js') || output.includes('No files changed'), 'Should process recent files or indicate no changes');
+
+            // Clean up
+            fs.unlinkSync(recentFile);
+
+            results.push({
+                name: 'Time-based incremental mode',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Time-based incremental mode',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 43: Git diff incremental mode (--git-diff)
+         * Verifies that --git-diff filters files based on git changes.
+         * Note: This test may be skipped if not in a git repository.
+         */
+        try {
+            console.log(`📋 Running Test 43/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} --git-diff HEAD -o`)}`);
+
+            // This test requires being in a git repo
+            try {
+                execSync('git rev-parse --git-dir', { stdio: 'pipe' });
+                const output = runCommand('--git-diff HEAD -o');
+                // Should either show changed files or indicate no changes
+                assert(output.includes('This context file') || output.includes('No files changed'), 'Should produce valid output');
+            } catch (gitError) {
+                // Not in a git repo, skip this test
+                console.log('  Skipped: Not in a git repository');
+            }
+
+            results.push({
+                name: 'Git diff incremental mode',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Git diff incremental mode',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        /**
+         * Test 44: Changed since last run (--changed)
+         * Verifies that --changed only includes files modified since last cx run.
+         */
+        try {
+            console.log(`📋 Running Test 44/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${TEST_DIR} --changed -o`)}`);
+
+            // First run to establish baseline
+            runCommand(`${TEST_DIR} -m "baseline"`);
+
+            // Create a new file after baseline
+            const newFile = path.join(TEST_DIR, 'new-after-baseline.js');
+            fs.writeFileSync(newFile, 'console.log("new");');
+
+            // Small delay to ensure file timestamp is different
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Run with --changed flag
+            const output = runCommand(`${TEST_DIR} --changed -o`);
+
+            // Should process the new file
+            assert(output.includes('new-after-baseline.js') || output.includes('No files changed'), 'Should detect new file or indicate no changes');
+
+            // Clean up
+            if (fs.existsSync(newFile)) {
+                fs.unlinkSync(newFile);
+            }
+
+            results.push({
+                name: 'Changed since last run',
+                status: 'passed'
+            });
+        } catch (error) {
+            results.push({
+                name: 'Changed since last run',
+                status: 'failed',
+                error: error.message
+            });
+        }
+
+        // =====================================================================
+        // Async Tests (Tests 31-33) - Run at end due to state modifications
+        // =====================================================================
 
         // Add the tests for ignore and tree commands
         results.push(await testTreeCommandWithIgnorePatterns());

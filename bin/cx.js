@@ -224,7 +224,7 @@ async function main() {
     let inputPaths = argv._.length > 0 ? argv._ : ['.'];
     
     // Filter out any args that are actually commands or options
-    inputPaths = inputPaths.filter(arg => !arg.startsWith('-') && !['ignore', 'configure', 'show', 'clear', 'clear-all'].includes(arg));
+    inputPaths = inputPaths.filter(arg => !arg.startsWith('-') && !['ignore', 'include', 'configure', 'show', 'clear', 'clear-all'].includes(arg));
     
     // If no valid paths remain, use current directory
     if (inputPaths.length === 0) {
@@ -262,7 +262,11 @@ async function main() {
         timeoutMs: (argv.timeout || 30) * 1000,
         maxFileSizeMb: argv['max-size'],
         skipClipboard: argv['no-clipboard'],
-        screenOutput: argv.o
+        screenOutput: argv.o,
+        format: argv.f || argv.format || 'text',
+        since: argv.since || null,
+        gitDiff: argv['git-diff'] || null,
+        changed: argv.changed || false
       });
     } catch (error) {
       console.error(chalk.red(`Error: ${error.message}`));
