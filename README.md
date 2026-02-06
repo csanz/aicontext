@@ -5,17 +5,8 @@
 
 [![Tests](https://img.shields.io/badge/tests-44%20passed-brightgreen.svg)](TESTS.md)
 [![npm](https://img.shields.io/badge/npm-v1.6.1-blue)](https://www.npmjs.com/package/ai-context)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-
-## Test Status 🧪
-
-[![Test Status](https://img.shields.io/badge/tests-44%20passed-brightgreen.svg)](TESTS.md)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](TESTS.md)
-[![npm](https://img.shields.io/badge/npm-v1.6.1-blue)](https://www.npmjs.com/package/aictx)
-[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](package.json)
-
-Last tested: 02/05/2026, 23:18 America/Los_Angeles
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## What is AIContext?
 
