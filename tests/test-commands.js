@@ -177,65 +177,15 @@ async function updateTestsFile(results) {
         console.error('❌ Failed to update TESTS.md:', error.message);
     }
 
-    // Update README.md
+    // Update README.md badges (only update existing badges, don't add sections)
     try {
         const readmePath = path.join(__dirname, '..', 'README.md');
         let readmeContent = fs.readFileSync(readmePath, 'utf8');
-        
-        // Load the badge template
-        const badgeTemplatePath = path.join(__dirname, '..', 'templates', 'BADGES.template.md');
-        let badgeTemplate = fs.readFileSync(badgeTemplatePath, 'utf8');
-        
-        // Replace the dynamic badges with updated values
-        badgeTemplate = badgeTemplate
-            .replace(/tests-\d+%20passed/, `tests-${passedCount}%20passed`)
-            .replace(/tests-.*?-/, `tests-${passedCount}%20passed-`)
-            .replace(/-yellow\.svg/, passedCount === totalTests ? '-brightgreen.svg' : '-yellow.svg')
-            .replace(/coverage-\d+%25/, `coverage-${coverage}%25`)
-            .replace(/coverage-.*?-/, `coverage-${coverage}%25-`)
-            .replace(/coverage-\d+%25-yellow/, `coverage-${coverage}%25-${coverage === 100 ? 'brightgreen' : 'yellow'}`)
-            .replace(/npm-v.*?-blue/, `npm-v${packageJson.version}-blue`);
 
-        // Prepare test status section with badges
-        const testStatusSection = `## Test Status 🧪
-
-${badgeTemplate}
-
-Last tested: ${readableDateStr}
-`;
-
-        // Split content at the test status section
-        const parts = readmeContent.split('## Test Status 🧪');
-        
-        // If we found the section
-        if (parts.length > 1) {
-            // Find the end of the test status section (next ## heading or end of file)
-            const afterTestStatus = parts[1];
-            const nextSectionMatch = afterTestStatus.match(/\n##\s/);
-            const remainingContent = nextSectionMatch 
-                ? afterTestStatus.substring(nextSectionMatch.index)
-                : afterTestStatus.substring(afterTestStatus.indexOf('\n\n'));
-
-            // Rebuild the content
-            readmeContent = parts[0] +
-                          testStatusSection +
-                          remainingContent;
-        } else {
-            // If section doesn't exist, add it after the first badge
-            const firstBadgeEnd = readmeContent.indexOf('\n\n', readmeContent.indexOf('[!['));
-            readmeContent = readmeContent.slice(0, firstBadgeEnd + 2) +
-                          testStatusSection +
-                          '\n\n' +
-                          readmeContent.slice(firstBadgeEnd + 2);
-        }
-
-        // Update the last updated timestamp at the bottom
-        if (readmeContent.includes('*Last updated:')) {
-            readmeContent = readmeContent.replace(
-                /\*Last updated:.*\*/,
-                '' // Remove the bottom timestamp
-            );
-        }
+        // Update the existing badges at the top of README
+        readmeContent = readmeContent
+            .replace(/tests-\d+%20passed/g, `tests-${passedCount}%20passed`)
+            .replace(/npm-v[\d.]+-blue/g, `npm-v${packageJson.version}-blue`);
 
         fs.writeFileSync(readmePath, readmeContent);
         console.log('✅ Updated README.md');
