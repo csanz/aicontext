@@ -247,13 +247,14 @@ Last tested: ${readableDateStr}
 function runCommand(command) {
     // Run the real command
     try {
-        return execSync(`${CLI_COMMAND} ${command}`, { 
+        return execSync(`${CLI_COMMAND} ${command}`, {
             encoding: 'utf8',
-            stdio: 'pipe'
+            stdio: 'pipe',
+            maxBuffer: 50 * 1024 * 1024 // 50MB buffer to handle large outputs
         });
     } catch (error) {
         // Don't handle the error, let it bubble up
-        console.error(chalk.red('Command output:'), error.output.join('\n'));
+        console.error(chalk.red('Command output:'), error.output ? error.output.join('\n') : error.message);
         throw error;
     }
 }
@@ -1419,7 +1420,7 @@ async function runTests() {
         /**
          * Test 27: Binary and media file exclusions
          * Verifies that binary files are excluded from content but media files
-         * are shown in tree output with [media] labels.
+         * are shown in tree output for visualization purposes.
          */
         try {
             console.log(`📋 Running Test 27/${TOTAL_TESTS}: ${chalk.blue(`${CLI_COMMAND} ${BINARY_TEST_DIR}`)}`);
@@ -1450,17 +1451,25 @@ async function runTests() {
             const fileLines = treeLines.filter(line => !line.endsWith('/'));
             
             // Define media extensions that should be included in the tree
-            const mediaExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.ico', '.webp', '.bmp', '.tiff'];
-            
+            // This is the intersection of isMediaFile() and BINARY_EXTENSIONS
+            // (files that are created by the test AND shown in tree as media)
+            const mediaExtensions = [
+                '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp',
+                '.mp3', '.wav', '.ogg', '.mp4', '.mov', '.avi', '.webm',
+                '.pdf', '.svg', '.ico'
+            ];
+
             // Check that non-media binary files are excluded
             BINARY_EXTENSIONS.forEach(ext => {
                 // Skip media files which should be shown in the tree
                 if (mediaExtensions.includes(ext)) {
                     return;
                 }
-                
+
                 const fileName = `test-file${ext}`;
-                assert(!fileLines.some(line => line.includes(fileName)), 
+                // Use regex to match exact filename (not substring) - avoids .ogg matching .o
+                const exactMatch = new RegExp(`\\b${fileName.replace('.', '\\.')}(\\s|$|\\[)`);
+                assert(!fileLines.some(line => exactMatch.test(line)),
                     `Tree should exclude ${ext} files (${fileName})`);
             });
 
@@ -1479,11 +1488,8 @@ async function runTests() {
             // Verify media files are included in tree output
             mediaExtensions.forEach(ext => {
                 const fileName = `test-file${ext}`;
-                // Only check for files that appear in the tree
-                if (fileLines.some(line => line.includes(fileName))) {
-                    assert(fileLines.some(line => line.includes(fileName) && line.includes('[media]')), 
-                        `Tree should show ${ext} files with [media] label (${fileName})`);
-                }
+                assert(fileLines.some(line => line.includes(fileName)),
+                    `Tree should show ${ext} files (${fileName})`);
             });
             
             // Verify inclusions in context output

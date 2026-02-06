@@ -217,10 +217,24 @@ cx include clear                # Reset to include all
 
 ### How Filtering Works
 
-1. **Include patterns** act as a whitelist
-2. **Ignore patterns** exclude from the whitelist
-3. Files must match include AND not match ignore
-4. Empty include list = include all files
+**Precedence Rules:**
+1. System exclusions always apply first (node_modules, .git, binaries)
+2. `.gitignore` patterns are applied next
+3. **Include patterns** act as a whitelist (if defined)
+4. **Ignore patterns** exclude from the remaining files
+
+**In Practice:**
+- If **no include patterns**: all non-excluded files are processed
+- If **include patterns defined**: only matching files are considered
+- **Ignore patterns** can then further exclude from included files
+- Files must match include AND not match ignore to be processed
+
+**Example:**
+```bash
+cx include "src/**"         # Only files in src/
+cx ignore "**/*.test.js"    # But exclude test files
+# Result: All files in src/ except test files
+```
 
 ---
 

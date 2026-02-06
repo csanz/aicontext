@@ -2,6 +2,24 @@
 
 This file contains a history of important updates and changes to the AIContext tool.
 
+## Version 1.6.1 (February 2026)
+
+### Bug Fixes
+- **Fixed**: Help text now shows correct default max file size (10MB, not 1MB)
+- **Fixed**: Consistent error message format across all commands
+
+### Improvements
+- **Improved**: Token counting now uses word/punctuation-based estimation instead of simple char/4
+- **Improved**: Simplified success output (removed redundant "All Done!" message)
+- **Improved**: Clipboard error now clarifies that file was saved successfully
+- **Added**: Glob pattern validation before saving (catches invalid patterns early)
+- **Added**: Warning when no files match include/ignore criteria
+- **Added**: Glob pattern syntax help in `cx ignore add` and `cx include add`
+- **Added**: Symlink loop detection to prevent infinite recursion
+- **Added**: Graceful handling of files deleted during scan
+- **Added**: Clear precedence documentation for include/ignore patterns in COMMANDS.md
+- **Fixed**: Test buffer size to handle large output tests
+
 ## Version 1.6.0 (February 2026)
 
 ### New Features
