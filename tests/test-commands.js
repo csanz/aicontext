@@ -69,7 +69,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Import local modules
-import { BINARY_EXTENSIONS } from '../lib/constants.js';
+import { BINARY_EXTENSIONS, MEDIA_EXTENSIONS } from '../lib/constants.js';
 import { shouldProcessFile } from '../lib/fileUtils.js';
 import { getExclusions, getInclusions } from '../lib/configHandler.js';
 import { BASIC_OPTIONS, DETAILED_OPTIONS } from '../lib/helpHandler.js';
@@ -1450,19 +1450,13 @@ async function runTests() {
             const treeLines = actualTreeOutput.split('\n');
             const fileLines = treeLines.filter(line => !line.endsWith('/'));
             
-            // Define media extensions that should be included in the tree
-            // This is the intersection of isMediaFile() and BINARY_EXTENSIONS
-            // (files that are created by the test AND shown in tree as media)
-            const mediaExtensions = [
-                '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp',
-                '.mp3', '.wav', '.ogg', '.mp4', '.mov', '.avi', '.webm',
-                '.pdf', '.svg', '.ico'
-            ];
+            // Media extensions that are in BINARY_EXTENSIONS (files created by test AND shown in tree)
+            const testMediaExtensions = MEDIA_EXTENSIONS.filter(ext => BINARY_EXTENSIONS.includes(ext));
 
             // Check that non-media binary files are excluded
             BINARY_EXTENSIONS.forEach(ext => {
                 // Skip media files which should be shown in the tree
-                if (mediaExtensions.includes(ext)) {
+                if (testMediaExtensions.includes(ext)) {
                     return;
                 }
 
@@ -1486,7 +1480,7 @@ async function runTests() {
             });
             
             // Verify media files are included in tree output
-            mediaExtensions.forEach(ext => {
+            testMediaExtensions.forEach(ext => {
                 const fileName = `test-file${ext}`;
                 assert(fileLines.some(line => line.includes(fileName)),
                     `Tree should show ${ext} files (${fileName})`);

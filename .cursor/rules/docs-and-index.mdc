@@ -1,0 +1,15 @@
+---
+description: Keep INDEX.md and docs/FEATURES.md up to date when changing structure or APIs
+alwaysApply: true
+---
+
+# Cursor rules for this repo
+
+- Do not make any changes the user did not explicitly ask for.
+- If a helpful improvement is outside the user's request, propose it first and wait for approval.
+- Keep edits narrowly scoped to the requested files/behavior.
+- To find "where a feature lives", start with **@docs/INDEX.md** (file map) and **@docs/FEATURES.md** (product/feature map).
+- **Keep `docs/INDEX.md` up to date**: when adding/removing/moving files, or changing exported APIs/components or public functions, update `docs/INDEX.md` in the same change (no exceptions).
+- **Keep `docs/FEATURES.md` up to date**: when adding/changing/removing user-facing features or flows (commands, options, clear behavior, ignore, configure, tree, context generation, clipboard, run/history), update `docs/FEATURES.md` in the same change.
+- When editing/adding **entry or CLI** (`bin/**`), ensure the file has a short top-of-file comment describing purpose.
+- When editing/adding **libraries** (`lib/**`), ensure exported symbols have a short doc comment when non-obvious.
